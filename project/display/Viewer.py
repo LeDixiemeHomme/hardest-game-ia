@@ -14,7 +14,7 @@ class Viewer(metaclass=MetaSingleton):
     def __init_screen():
         screen = pygame.display
         screen.set_caption("Hardest game IA")
-        screen.set_icon(pygame.image.load('./static/artificial-intelligence.png'))
+        screen.set_icon(pygame.image.load('../static/artificial-intelligence.png'))
         return screen
 
     def __init_display(self):

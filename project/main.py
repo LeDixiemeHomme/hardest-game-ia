@@ -12,7 +12,7 @@ from project.model.Position import Position
 from project.model.Square import Square
 from project.model.SquareType import SquareType
 
-logging.basicConfig(filename='records.log', level=logging.DEBUG)
+logging.basicConfig(filename='../records.log', level=logging.DEBUG)
 
 running = True
 my_display = Viewer().display
