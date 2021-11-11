@@ -1,6 +1,6 @@
 import pygame
 
-from project.MetaSingleton.MetaSingleton import MetaSingleton
+from project.metaSingleton.MetaSingleton import MetaSingleton
 
 
 class Viewer(metaclass=MetaSingleton):
