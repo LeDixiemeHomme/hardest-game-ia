@@ -2,7 +2,7 @@ import logging
 import pygame
 
 from project.display.Viewer import Viewer
-from project.model import constant
+from project.constant import constant
 
 logging.basicConfig(filename='./records.log', level=logging.DEBUG)
 
