@@ -2,7 +2,7 @@ from typing import List
 import pygame
 
 from project.display.Viewer import Viewer
-from project.model import constant
+from project.constant import constant
 from project.model.Position import Position
 from project.model.Obstacle import Obstacle
 from project.model.Square import Square
