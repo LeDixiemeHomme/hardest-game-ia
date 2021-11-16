@@ -24,6 +24,10 @@ class Viewer(metaclass=MetaSingleton):
         my_display = self.__screen.set_mode((800, 800))
         return my_display
 
+    @staticmethod
+    def create_rectangle(left_arg: float, top_arg: float, width_arg: float, height_arg: float) -> pygame.Rect:
+        return pygame.Rect(left_arg, top_arg, width_arg, height_arg)
+
     def draw(self, color: (int, int, int), rect: pygame.Rect):
         pygame.draw.rect(self.__display, color, rect)
 
