@@ -1,4 +1,4 @@
-from project.model import constant
+from project.constant import constant
 from project.model.Position import Position
 from project.model.SquareType import SquareType
 
