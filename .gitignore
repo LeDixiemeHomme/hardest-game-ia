@@ -383,3 +383,4 @@ cython_debug/
 
 records.log
 .idea/
+project/perso_main.py
