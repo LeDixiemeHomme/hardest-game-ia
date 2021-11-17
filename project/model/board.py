@@ -6,7 +6,7 @@ from project.model.obstacle import Obstacle
 from project.model.square import Square
 from project.model.square_type import SquareType
 from project.constant import constant
-from project.exception.out_of_bond_block_position import OutOfBondBlockPosition
+from project.exception.out_of_bond_block_position import OutOfBoundBlockPosition
 
 
 class Board:
@@ -87,11 +87,11 @@ class Board:
     def init_start(self) -> SquareType:
         if 0 >= self.__position_start.co_x > self.__width or 0 >= self.__position_start.co_y > self.__height \
                 or self.__position_start.co_x <= 0 or self.__position_start.co_y <= 0:
-            raise OutOfBondBlockPosition(position=self.__position_start, square_type=SquareType.START)
+            raise OutOfBoundBlockPosition(position=self.__position_start, square_type=SquareType.START)
         return SquareType.START
 
     def init_goal(self) -> SquareType:
         if self.__position_goal.co_x > self.__width or 0 >= self.__position_goal.co_y > self.__height \
                 or self.__position_goal.co_x <= 0 or self.__position_goal.co_y <= 0:
-            raise OutOfBondBlockPosition(position=self.__position_goal, square_type=SquareType.GOAL)
+            raise OutOfBoundBlockPosition(position=self.__position_goal, square_type=SquareType.GOAL)
         return SquareType.GOAL
