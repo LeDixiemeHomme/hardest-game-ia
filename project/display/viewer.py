@@ -2,14 +2,15 @@ import pygame
 
 from project.metaSingleton.MetaSingleton import MetaSingleton
 from project.constant import constant
+from project.exception.wrong_display_size_exception import WrongDisplaySizeException
 
 
 class Viewer(metaclass=MetaSingleton):
 
-    def __init__(self):
+    def __init__(self, width: int, height: int):
         pygame.init()
         self.__screen = self.__init_screen()
-        self.__display = self.__init_display()
+        self.__display = self.__init_display(width=width, height=height)
 
     @staticmethod
     def __init_screen():
@@ -18,15 +19,18 @@ class Viewer(metaclass=MetaSingleton):
         screen.set_icon(pygame.image.load('../static/artificial-intelligence.png'))
         return screen
 
-    def __init_display(self):
-        my_display = self.__screen.set_mode((800, 800))
+    def __init_display(self, width: int, height: int):
+        if width > 20 or height > 20:
+            raise WrongDisplaySizeException(width, height)
+        my_display = self.__screen.set_mode(((height + 2) * constant.DRAW_SCALE,
+                                             (width + 2) * constant.DRAW_SCALE))
         return my_display
 
     @staticmethod
-    def create_rectangle(left_arg: float, top_arg: float, width_arg: float, height_arg: float) -> pygame.Rect:
+    def create_rectangle(left_arg: int, top_arg: int, width_arg: int, height_arg: int) -> pygame.Rect:
         return pygame.Rect(left_arg, top_arg, width_arg, height_arg)
 
-    def draw_image(self, image_path_size: (str, float), co_x: float, co_y: float) -> pygame.Rect:
+    def draw_image(self, image_path_size: (str, int), co_x: int, co_y: int) -> pygame.Rect:
         image = pygame.image.load(image_path_size[0])
         scaled_image = pygame.transform.scale(image, (image_path_size[1], image_path_size[1]))
 
