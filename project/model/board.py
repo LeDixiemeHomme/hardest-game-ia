@@ -1,18 +1,18 @@
 from typing import List
 import pygame
 
-from project.display.Viewer import Viewer
+from project.display import Viewerben
+from project.model import Position
+from project.model import Obstacle
+from project.model import Square
+from project.model import SquareType
 from project.constant import constant
-from project.model.Position import Position
-from project.model.Obstacle import Obstacle
-from project.model.Square import Square
-from project.model.SquareType import SquareType
 
 
 class Board:
 
     def __init__(self, height: int, width: int,
-                 position_start: Position, position_goal: Position, list_of_enemy: List[Obstacle]):
+                 position_start: Position, position_goal: Position, list_of_obstacle: List[Obstacle]):
         self.__height = height
         self.__width = width
         self.__position_start = Position(co_x=position_start.co_x * constant.SQUARE_SIZE,
@@ -20,15 +20,15 @@ class Board:
         self.__position_goal = Position(co_x=position_goal.co_x * constant.SQUARE_SIZE,
                                         co_y=position_goal.co_y * constant.SQUARE_SIZE)
         self.__list_of_square: List[Square] = self.init_list_of_square()
-        self.__list_of_enemy = list_of_enemy
+        self.__list_of_obstacle = list_of_obstacle
 
     @property
     def list_of_square(self):
         return self.__list_of_square
 
     @property
-    def list_of_enemy(self):
-        return self.__list_of_enemy
+    def list_of_obstacle(self):
+        return self.__list_of_obstacle
 
     @property
     def height(self):
@@ -75,18 +75,18 @@ class Board:
         size = constant.SQUARE_SIZE * constant.DRAW_SCALE
         color = constant.COLOR
         for square in self.__list_of_square:
-            rect: pygame.Rect = Viewer().create_rectangle(left_arg=(square.position.co_x * constant.DRAW_SCALE),
-                                                          top_arg=(square.position.co_y * constant.DRAW_SCALE),
-                                                          width_arg=size,
-                                                          height_arg=size)
+            rect: pygame.Rect = Viewerben().create_rectangle(left_arg=(square.position.co_x * constant.DRAW_SCALE),
+                                                             top_arg=(square.position.co_y * constant.DRAW_SCALE),
+                                                             width_arg=size,
+                                                             height_arg=size)
             if square.square_type == SquareType.GOAL:
-                Viewer().draw(color=color.get("GREEN"), rect=rect)
+                Viewerben().draw(color=color.get("GREEN"), rect=rect)
             elif square.square_type == SquareType.START:
-                Viewer().draw(color=color.get("RED"), rect=rect)
+                Viewerben().draw(color=color.get("RED"), rect=rect)
             elif square.square_type == SquareType.EMPTY:
-                Viewer().draw(color=color.get("WHITE"), rect=rect)
+                Viewerben().draw(color=color.get("WHITE"), rect=rect)
             else:
-                Viewer().draw(color=color.get("BLACK"), rect=rect)
+                Viewerben().draw(color=color.get("BLACK"), rect=rect)
 
     def init_start(self) -> SquareType:
         if self.__position_start.co_y < self.__height and self.__position_start.co_x < self.__width:

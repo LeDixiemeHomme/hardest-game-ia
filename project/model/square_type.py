@@ -6,3 +6,4 @@ class SquareType(Enum):
     GOAL = 2
     EMPTY = 3
     WALL = 4
+    OBSTACLE = 5

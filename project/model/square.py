@@ -1,5 +1,5 @@
 from project.constant import constant
-from project.model.Position import Position
+from project.model.position import Position
 from project.model.SquareType import SquareType
 
 
