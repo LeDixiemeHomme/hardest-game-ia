@@ -1,11 +1,10 @@
-from typing import List
 import pygame
+from typing import List
 
-from project.display import Viewerben
-from project.model import Position
-from project.model import Obstacle
-from project.model import Square
-from project.model import SquareType
+from project.model.position import Position
+from project.model.obstacle import Obstacle
+from project.model.square import Square
+from project.model.square_type import SquareType
 from project.constant import constant
 
 
@@ -75,18 +74,18 @@ class Board:
         size = constant.SQUARE_SIZE * constant.DRAW_SCALE
         color = constant.COLOR
         for square in self.__list_of_square:
-            rect: pygame.Rect = Viewerben().create_rectangle(left_arg=(square.position.co_x * constant.DRAW_SCALE),
-                                                             top_arg=(square.position.co_y * constant.DRAW_SCALE),
-                                                             width_arg=size,
-                                                             height_arg=size)
+            rect: pygame.Rect = constant.VIEWER \
+                .create_rectangle(left_arg=(square.position.co_x * constant.DRAW_SCALE),
+                                  top_arg=(square.position.co_y * constant.DRAW_SCALE),
+                                  width_arg=size, height_arg=size)
             if square.square_type == SquareType.GOAL:
-                Viewerben().draw(color=color.get("GREEN"), rect=rect)
+                constant.VIEWER.draw(color=color.get("GREEN"), rect=rect)
             elif square.square_type == SquareType.START:
-                Viewerben().draw(color=color.get("RED"), rect=rect)
+                constant.VIEWER.draw(color=color.get("RED"), rect=rect)
             elif square.square_type == SquareType.EMPTY:
-                Viewerben().draw(color=color.get("WHITE"), rect=rect)
+                constant.VIEWER.draw(color=color.get("WHITE"), rect=rect)
             else:
-                Viewerben().draw(color=color.get("BLACK"), rect=rect)
+                constant.VIEWER.draw(color=color.get("BLACK"), rect=rect)
 
     def init_start(self) -> SquareType:
         if self.__position_start.co_y < self.__height and self.__position_start.co_x < self.__width:

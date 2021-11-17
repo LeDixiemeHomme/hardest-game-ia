@@ -1,18 +1,19 @@
 import logging
 import pygame
 
-from project.display.Viewer import Viewer
 from project.constant import constant
 
 logging.basicConfig(filename='./records.log', level=logging.DEBUG)
 
 running = True
-my_display = Viewer().display
-screen = Viewer().screen
+my_display = constant.VIEWER.display
+screen = constant.VIEWER.screen
 
 board = constant.MAIN_BOARD
 logging.debug("Start drawing board ...")
 board.draw_board()
+for obst in board.list_of_obstacle:
+    obst.draw_obstacle()
 
 while running:
     screen.update()

@@ -1,4 +1,4 @@
-from project.model.Direction import Direction
+from project.model.direction import Direction
 
 
 class Movement:

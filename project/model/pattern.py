@@ -1,6 +1,6 @@
 from typing import List
 
-from project.model.Movement import Movement
+from project.model.movement import Movement
 
 
 class Pattern:

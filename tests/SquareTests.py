@@ -1,8 +1,8 @@
 import unittest
 
-from project.model.Position import Position
-from project.model.Square import Square
-from project.model.SquareType import SquareType
+from project.model.position import Position
+from project.model.square import Square
+from project.model.square_type import SquareType
 
 
 class SquareTests(unittest.TestCase):
