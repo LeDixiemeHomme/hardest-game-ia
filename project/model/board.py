@@ -6,20 +6,21 @@ from project.model.obstacle import Obstacle
 from project.model.square import Square
 from project.model.square_type import SquareType
 from project.constant import constant
+from project.exception.out_of_bond_block_position import OutOfBondBlockPosition
 
 
 class Board:
 
-    def __init__(self, height: int, width: int,
-                 position_start: Position, position_goal: Position, list_of_obstacle: List[Obstacle]):
+    def __init__(self, height: int, width: int, position_start: Position, position_goal: Position,
+                 list_of_obstacle: List[Obstacle]):
         self.__height = height
         self.__width = width
-        self.__position_start = Position(co_x=position_start.co_x * constant.SQUARE_SIZE,
-                                         co_y=position_start.co_y * constant.SQUARE_SIZE)
-        self.__position_goal = Position(co_x=position_goal.co_x * constant.SQUARE_SIZE,
-                                        co_y=position_goal.co_y * constant.SQUARE_SIZE)
+        self.__position_start = Position(co_x=position_start.co_x, co_y=position_start.co_y)
+        self.__position_goal = Position(co_x=position_goal.co_x, co_y=position_goal.co_y)
         self.__list_of_square: List[Square] = self.init_list_of_square()
         self.__list_of_obstacle = list_of_obstacle
+        self.init_start()
+        self.init_goal()
 
     @property
     def list_of_square(self):
@@ -47,26 +48,22 @@ class Board:
 
     def init_list_of_square(self) -> List[Square]:
         list_of_square = []
-        for i in range(self.__height):
-            for y in range(self.__width):
-                # on prend ici non pas i mais i fois la taille d'un square pour avoir la proportion
-                square_size_time_i = i * constant.SQUARE_SIZE
-                square_size_time_y = y * constant.SQUARE_SIZE
+        for x in range(1, self.__height + 1):
+            for y in range(1, self.__width + 1):
                 # test si il faut mettre le bloc de type start
-                if square_size_time_i == self.__position_start.co_x \
-                        and square_size_time_y == self.__position_start.co_y:
+                if x == self.__position_start.co_x \
+                        and y == self.__position_start.co_y:
                     # ajoute dans le tableau un square
                     list_of_square.append(
-                        Square(position=Position(square_size_time_i, square_size_time_y),
-                               square_type=self.init_start()))
+                        Square(position=Position(x, y), square_type=SquareType.START))
                 # test si il faut mettre le bloc de type start
-                elif square_size_time_i == self.__position_goal.co_x \
-                        and square_size_time_y == self.__position_goal.co_y:
+                elif x == self.__position_goal.co_x \
+                        and y == self.__position_goal.co_y:
                     list_of_square.append(
-                        Square(position=Position(square_size_time_i, square_size_time_y), square_type=self.init_goal()))
+                        Square(position=Position(x, y), square_type=SquareType.GOAL))
                 else:
                     list_of_square.append(
-                        Square(position=Position(square_size_time_i, square_size_time_y), square_type=SquareType.EMPTY))
+                        Square(position=Position(x, y), square_type=SquareType.EMPTY))
 
         return list_of_square
 
@@ -85,14 +82,16 @@ class Board:
             elif square.square_type == SquareType.EMPTY:
                 constant.VIEWER.draw(color=color.get("WHITE"), rect=rect)
             else:
-                constant.VIEWER.draw(color=color.get("BLACK"), rect=rect)
+                constant.VIEWER.draw(color=color.get("BLUE"), rect=rect)
 
     def init_start(self) -> SquareType:
-        if self.__position_start.co_y < self.__height and self.__position_start.co_x < self.__width:
-            return SquareType.START
-            # todo throw error if not
+        if 0 >= self.__position_start.co_x > self.__width or 0 >= self.__position_start.co_y > self.__height \
+                or self.__position_start.co_x <= 0 or self.__position_start.co_y <= 0:
+            raise OutOfBondBlockPosition(position=self.__position_start, square_type=SquareType.START)
+        return SquareType.START
 
     def init_goal(self) -> SquareType:
-        if self.__position_goal.co_x < self.__width and self.__position_goal.co_y < self.__height:
-            # todo throw error if not
-            return SquareType.GOAL
+        if self.__position_goal.co_x > self.__width or 0 >= self.__position_goal.co_y > self.__height \
+                or self.__position_goal.co_x <= 0 or self.__position_goal.co_y <= 0:
+            raise OutOfBondBlockPosition(position=self.__position_goal, square_type=SquareType.GOAL)
+        return SquareType.GOAL
