@@ -1,11 +1,10 @@
 import pygame
 
-from project.constant import constant
 from project.metaSingleton.MetaSingleton import MetaSingleton
-from project.model.Position import Position
+from project.constant import constant
 
 
-class Viewerben(metaclass=MetaSingleton):
+class Viewer(metaclass=MetaSingleton):
 
     def __init__(self):
         pygame.init()
@@ -27,14 +26,14 @@ class Viewerben(metaclass=MetaSingleton):
     def create_rectangle(left_arg: float, top_arg: float, width_arg: float, height_arg: float) -> pygame.Rect:
         return pygame.Rect(left_arg, top_arg, width_arg, height_arg)
 
-    def draw_image(self, image_path_size: (str, float), position_image: Position) -> pygame.Rect:
+    def draw_image(self, image_path_size: (str, float), co_x: float, co_y: float) -> pygame.Rect:
         image = pygame.image.load(image_path_size[0])
-        # scaled_image = pygame.transform.scale(image, (image_path_size[1], image_path_size[1]))
-        return self.__display.blit(image, pygame.Rect(position_image.co_x * constant.DRAW_SCALE,
-                                                      position_image.co_y * constant.DRAW_SCALE,
-                                                      image_path_size[1], image_path_size[1]))
-        # return self.display.blit(image, (0, 0))
-        # return self.__display.blit(scaled_image, (position_image.co_x, position_image.co_y))
+        scaled_image = pygame.transform.scale(image, (image_path_size[1], image_path_size[1]))
+
+        return self.__display.blit(scaled_image, pygame.Rect(co_x * constant.DRAW_SCALE * constant.SQUARE_SIZE,
+                                                             co_y * constant.DRAW_SCALE * constant.SQUARE_SIZE,
+                                                             image_path_size[1] * constant.DRAW_SCALE,
+                                                             image_path_size[1] * constant.DRAW_SCALE))
 
     def draw(self, color: (int, int, int), rect: pygame.Rect):
         pygame.draw.rect(self.__display, color, rect)

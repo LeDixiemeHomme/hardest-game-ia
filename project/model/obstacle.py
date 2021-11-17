@@ -1,6 +1,6 @@
-from project.display.Viewerben import Viewerben
-from project.model import Pattern
-from project.model import Square
+from project.constant import constant
+from project.model.pattern import Pattern
+from project.model.square import Square
 
 
 class Obstacle:
@@ -8,10 +8,11 @@ class Obstacle:
         self.__picture = picture
         self.__position_square = position_square
         self.__pattern = pattern
-        self.__viewer = Viewerben()
 
     def draw_obstacle(self):
-        self.__viewer.draw_image(image_path_size=self.__picture, position_image=self.__position_square.position)
+        constant.VIEWER.draw_image(image_path_size=self.__picture,
+                                   co_x=self.__position_square.position.co_x,
+                                   co_y=self.__position_square.position.co_y)
 
     @property
     def current_position(self):
