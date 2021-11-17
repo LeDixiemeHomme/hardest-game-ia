@@ -4,7 +4,7 @@ from project.model.square import Square
 
 
 class Obstacle:
-    def __init__(self, position_square: Square, pattern: Pattern, picture: (str, float)):
+    def __init__(self, position_square: Square, pattern: Pattern, picture: (str, int)):
         self.__picture = picture
         self.__position_square = position_square
         self.__pattern = pattern
@@ -13,6 +13,7 @@ class Obstacle:
         constant.VIEWER.draw_image(image_path_size=self.__picture,
                                    co_x=self.__position_square.position.co_x,
                                    co_y=self.__position_square.position.co_y)
+
 
     @property
     def current_position(self):
