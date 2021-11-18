@@ -90,9 +90,9 @@ class Board:
     def init_start(self) -> SquareType:
         if self.__position_start.co_y < self.__height and self.__position_start.co_x < self.__width:
             return SquareType.START
-            # todo throw error if not
+        raise RuntimeError
 
     def init_goal(self) -> SquareType:
         if self.__position_goal.co_x < self.__width and self.__position_goal.co_y < self.__height:
-            # todo throw error if not
             return SquareType.GOAL
+        raise RuntimeError
