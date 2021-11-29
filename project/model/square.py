@@ -21,5 +21,6 @@ class Square:
         return self.__square_type
 
     def __str__(self) -> str:
-        string: str = "Square :" + " position = " + str(self.__position) + " square_type = " + str(self.__square_type)
+        string: str = "Square : { " + " position = " + str(self.__position) + "; square_type = " + str(
+            self.__square_type) + " }"
         return string

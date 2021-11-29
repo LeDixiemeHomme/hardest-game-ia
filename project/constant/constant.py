@@ -1,12 +1,7 @@
 from project.display.viewer import Viewer
-from project.model.board import Board
-from project.model.direction import Direction
-from project.model.movement import Movement
-from project.model.obstacle import Obstacle
-from project.model.pattern import Pattern
-from project.model.position import Position
-from project.model.square import Square
-from project.model.square_type import SquareType
+from project.model.board import Board, Position
+from project.model.movement import Movement, Direction
+from project.model.obstacle import Pattern, Obstacle
 
 # width == x and height == y
 
@@ -20,17 +15,29 @@ COLOR: {str: (int, int, int)} = {"RED": (255, 0, 0),
                                  "WHITE": (255, 255, 255),
                                  "BLACK": (0, 0, 0)}
 
-OBSTACLE_PICTURE: (str, int) = ("../static/obstacle.png", SQUARE_SIZE * DRAW_SCALE)
+PICTURE_PATH: str = "../static/obstacle.png"
+PICTURE_SIZE: int = SQUARE_SIZE * DRAW_SCALE
 
-CROSS_PATTERN: Pattern = Pattern(
-    [Movement(direction=Direction.RIGHT, length=1), Movement(direction=Direction.LEFT, length=1),
-     Movement(direction=Direction.UP, length=1), Movement(direction=Direction.DOWN, length=1),
-     Movement(direction=Direction.LEFT, length=1), Movement(direction=Direction.RIGHT, length=1),
-     Movement(direction=Direction.DOWN, length=1), Movement(direction=Direction.UP, length=1)])
+CROSS_PATTERN: Pattern = Pattern(list_of_movements=
+                                 [Movement(direction=Direction.RIGHT, length=1, speed=3),
+                                  Movement(direction=Direction.LEFT, length=1, speed=3),
+                                  Movement(direction=Direction.UP, length=1, speed=3),
+                                  Movement(direction=Direction.DOWN, length=1, speed=3),
+                                  Movement(direction=Direction.LEFT, length=1, speed=3),
+                                  Movement(direction=Direction.RIGHT, length=1, speed=3),
+                                  Movement(direction=Direction.DOWN, length=1, speed=3),
+                                  Movement(direction=Direction.UP, length=1, speed=3)])
 
-MAIN_BOARD: Board = Board(width=20, height=20, position_start=Position(1, 1), position_goal=Position(20, 20),
-                          list_of_obstacle=[Obstacle(
-                              position_square=Square(position=Position(2, 2), square_type=SquareType.OBSTACLE),
-                              pattern=CROSS_PATTERN, picture=OBSTACLE_PICTURE)])
+UP_PATTERN: Pattern = Pattern(list_of_movements=[Movement(direction=Direction.UP, length=1, speed=3)])
+
+OBSTACLE_UP_PATTERN: Obstacle = Obstacle(
+                              initial_position=Position(2, 2),
+                              pattern=UP_PATTERN, picture_path=PICTURE_PATH, picture_size=PICTURE_SIZE)
+
+MAIN_BOARD: Board = Board(width=6, height=3, position_start=Position(6, 1), position_goal=Position(1, 3),
+                          list_of_obstacle=[OBSTACLE_UP_PATTERN])
+
+# TEST_BOARD = Board = Board(width=4, height=4, position_start=Position(1, 1), position_goal=Position(2, 2),
+#                           list_of_obstacle=[OBSTACLE_UP_PATTERN])
 
 VIEWER: Viewer = Viewer(MAIN_BOARD.width, MAIN_BOARD.height)

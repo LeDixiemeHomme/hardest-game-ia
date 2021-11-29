@@ -11,3 +11,7 @@ class Pattern:
     @property
     def list_of_movements(self):
         return self.__list_of_movements
+
+    def __str__(self) -> str:
+        string: str = "Pattern : { list_of_movements = " + str(*self.__list_of_movements) + " }"
+        return string
