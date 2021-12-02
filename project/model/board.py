@@ -168,9 +168,6 @@ class Board:
                                                    current_position_type=current_position_type,
                                                    current_movement=current_movement)
 
-            if next_square.position.co_y == 4:
-                print(next_square.position)
-
             if next_square.square_type == SquareType.WALL:
                 obstacle.increment_pattern_state()
                 return
