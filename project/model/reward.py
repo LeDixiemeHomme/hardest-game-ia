@@ -1,12 +1,11 @@
 class Reward:
-
     def __init__(self, value):
-        self.__value = value
+        self._value = value
 
     @property
     def value(self):
-        return self.__value
+        return self._value
 
     def __str__(self) -> str:
-        string: str = "Reward :" + " value = " + str(self.__value) + " }"
+        string: str = "Reward :" + " value = " + str(self._value) + " }"
         return string
