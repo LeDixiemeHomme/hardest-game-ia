@@ -1,7 +1,7 @@
 import pygame
 
 from project.metaSingleton.MetaSingleton import MetaSingleton
-from project.constant.constant import DRAW_SCALE, SQUARE_SIZE, MAIN_BOARD_WIDTH, MAIN_BOARD_HEIGHT
+from project.constant.constant import DRAW_SCALE, SQUARE_SIZE, MAIN_BOARD_WIDTH, MAIN_BOARD_HEIGHT, ICON_PICTURE_PATH
 
 
 class WrongDisplaySizeException(Exception):
@@ -20,7 +20,8 @@ class Viewer(metaclass=MetaSingleton):
     def _init_screen():
         screen = pygame.display
         screen.set_caption("Hardest game IA")
-        screen.set_icon(pygame.image.load('../static/artificial-intelligence.png'))
+        path_image: str = ICON_PICTURE_PATH
+        screen.set_icon(pygame.image.load(path_image))
         return screen
 
     def _init_display(self, width: int, height: int):
