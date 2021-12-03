@@ -10,7 +10,7 @@ class Direction(Enum):
 
 
 class Movement:
-    def __init__(self, direction: Direction, length: int, speed: int):
+    def __init__(self, direction: Direction, length: int = 1, speed: int = 5):
         self._direction = direction
         self._length = length
         self._speed = speed
@@ -38,7 +38,7 @@ class Movement:
 
 
 class Pattern:
-    def __init__(self, list_of_movements: List[Movement]):
+    def __init__(self, list_of_movements: List[Movement] = []):
         self._list_of_movements = list_of_movements
 
     @property
