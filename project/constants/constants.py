@@ -8,6 +8,18 @@ SQUARE_SIZE: int = 1
 
 DRAW_SCALE: int = 40
 
+MAIN_BOARD_WIDTH = 17
+
+MAIN_BOARD_HEIGHT = 3
+
+BASE_PATH: str = os.path.abspath("..") + '/'
+
+OBSTACLE_PICTURE_PATH: str = BASE_PATH + "static/obstacle.png"
+
+ICON_PICTURE_PATH: str = BASE_PATH + "static/artificial-intelligence.png"
+
+PICTURE_SIZE: int = SQUARE_SIZE * DRAW_SCALE
+
 COLOR: {str: (int, int, int)} = {"RED": (255, 0, 0),
                                  "GREEN": (0, 255, 0),
                                  "BLUE": (0, 0, 255),
@@ -21,15 +33,3 @@ COLOR_WITH_TYPE: {SquareType: COLOR} = {
     SquareType.OBSTACLE: COLOR.get("WHITE"),
     SquareType.WALL: COLOR.get("BLACK")
 }
-
-MAIN_BOARD_WIDTH = 17
-
-MAIN_BOARD_HEIGHT = 3
-
-BASE_PATH: str = os.path.abspath("..") + '/'
-
-OBSTACLE_PICTURE_PATH: str = BASE_PATH + "static/obstacle.png"
-
-ICON_PICTURE_PATH: str = BASE_PATH + "static/artificial-intelligence.png"
-
-PICTURE_SIZE: int = SQUARE_SIZE * DRAW_SCALE
