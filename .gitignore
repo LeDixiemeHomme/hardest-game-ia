@@ -381,6 +381,6 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm
 
-records.log
 .idea/
 project/perso_main.py
+logs/*
