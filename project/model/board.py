@@ -1,5 +1,6 @@
 import pygame
 from typing import List
+from project.logger.logger import Logger
 
 from project.constant.constant import OBSTACLE_PICTURE_PATH, PICTURE_SIZE, COLOR, \
     MAIN_BOARD_WIDTH, MAIN_BOARD_HEIGHT, SQUARE_SIZE
@@ -14,6 +15,9 @@ COLOR_WITH_TYPE: {SquareType: COLOR} = {
     SquareType.OBSTACLE: COLOR.get("WHITE"),
     SquareType.WALL: COLOR.get("BLACK")
 }
+
+logger: Logger = Logger(name=__name__, log_file_name="board_log")
+stdout_logger = logger.stdout_log
 
 
 class Obstacle:

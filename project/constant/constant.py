@@ -6,11 +6,11 @@ SQUARE_SIZE: int = 1
 
 DRAW_SCALE: int = 40
 
-FILE_PATH: str = os.path.dirname(os.path.realpath(__file__)).replace("project/constant", '')
+BASE_PATH: str = os.path.abspath("..") + '/'
 
-OBSTACLE_PICTURE_PATH: str = FILE_PATH + "static/obstacle.png"
+OBSTACLE_PICTURE_PATH: str = BASE_PATH + "static/obstacle.png"
 
-ICON_PICTURE_PATH: str = FILE_PATH + "static/artificial-intelligence.png"
+ICON_PICTURE_PATH: str = BASE_PATH + "static/artificial-intelligence.png"
 
 PICTURE_SIZE: int = SQUARE_SIZE * DRAW_SCALE
 
