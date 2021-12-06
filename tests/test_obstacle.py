@@ -1,7 +1,7 @@
 import unittest
 
-from project.model.board import Obstacle, Position, SquareType
-from project.model.pattern import Pattern, Movement
+from project.model.board import Obstacle, Position
+from project.model.pattern import Pattern
 
 
 class TestObstacle(unittest.TestCase):
