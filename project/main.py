@@ -1,7 +1,7 @@
 import pygame
 
+from project.constants import constants_model
 from project.logger.logger import Logger
-from project.model.board import MAIN_BOARD
 from project.display.viewer import VIEWER
 
 logger: Logger = Logger(name=__name__, log_file_name="main_log")
@@ -12,7 +12,7 @@ if __name__ == '__main__':
     running = True
     my_display = VIEWER.display
     screen = VIEWER.screen
-    board = MAIN_BOARD
+    board = constants_model.MAIN_BOARD
 
     stdout_logger.debug("Start drawing board ...")
     board.draw_board()

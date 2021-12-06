@@ -1,9 +1,11 @@
 import unittest
 from typing import List
 
+from project.custom_exception.out_of_bound_block_position_exception import OutOfBoundBlockPositionException
 from project.model.board import Board, Position, SquareType, Obstacle
-from project.model.pattern import Pattern, Movement, Direction
-from project.model.square import OutOfBoundBlockPositionException
+from project.model.direction import Direction
+from project.model.movement import Movement
+from project.model.pattern import Pattern
 
 
 class TestBoard(unittest.TestCase):
