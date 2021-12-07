@@ -1,12 +1,12 @@
 import logging
 
-from project.constant.constant import BASE_PATH
+from project.constants import constants
 
 
 class Logger:
     def __init__(self, name: str, log_file_name: str = 'default_log_file'):
         self._name = name
-        self._log_file_name = BASE_PATH + 'logs/' + log_file_name + '.log'
+        self._log_file_name = constants.BASE_PATH + 'logs/' + log_file_name + '.log'
         self._format = logging.Formatter("%(asctime)s | %(levelname)s (at) %(name)s : %(message)s")
         # self._file_log = self._init_file_log()
         self._stdout_log = self._init_stdout_log()

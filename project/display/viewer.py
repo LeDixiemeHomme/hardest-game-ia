@@ -1,12 +1,8 @@
 import pygame
 
+from project.custom_exception.wrong_display_size_exception import WrongDisplaySizeException
 from project.metaSingleton.MetaSingleton import MetaSingleton
-from project.constant.constant import DRAW_SCALE, SQUARE_SIZE, MAIN_BOARD_WIDTH, MAIN_BOARD_HEIGHT, ICON_PICTURE_PATH
-
-
-class WrongDisplaySizeException(Exception):
-    def __init__(self, width: int, height: int):
-        super().__init__("%d x %d aren't valid display size" % (width, height))
+from project.constants import constants
 
 
 class Viewer(metaclass=MetaSingleton):
@@ -20,7 +16,7 @@ class Viewer(metaclass=MetaSingleton):
     def _init_screen():
         screen = pygame.display
         screen.set_caption("Hardest game IA")
-        path_image: str = ICON_PICTURE_PATH
+        path_image: str = constants.ICON_PICTURE_PATH
         screen.set_icon(pygame.image.load(path_image))
         return screen
 
@@ -28,23 +24,23 @@ class Viewer(metaclass=MetaSingleton):
         if width > 20 or height > 20:
             raise WrongDisplaySizeException(width, height)
         height_border_size, width_border_size = 1, 1
-        my_display = self._screen.set_mode(((width_border_size + width + width_border_size) * DRAW_SCALE,
-                                            (height_border_size + height + height_border_size) * DRAW_SCALE))
+        my_display = self._screen.set_mode(((width_border_size + width + width_border_size) * constants.DRAW_SCALE,
+                                            (height_border_size + height + height_border_size) * constants.DRAW_SCALE))
         return my_display
 
     @staticmethod
     def create_rectangle(left_arg: int, top_arg: int) -> pygame.Rect:
-        size = SQUARE_SIZE * DRAW_SCALE
-        return pygame.Rect(left_arg * DRAW_SCALE, top_arg * DRAW_SCALE, size, size)
+        size = constants.SQUARE_SIZE * constants.DRAW_SCALE
+        return pygame.Rect(left_arg * constants.DRAW_SCALE, top_arg * constants.DRAW_SCALE, size, size)
 
     def draw_image(self, picture_path: str, picture_size: int, co_x: int, co_y: int) -> pygame.Rect:
         image = pygame.image.load(picture_path)
         scaled_image = pygame.transform.scale(image, (picture_size, picture_size))
 
-        return self._display.blit(scaled_image, pygame.Rect(co_x * DRAW_SCALE * SQUARE_SIZE,
-                                                            co_y * DRAW_SCALE * SQUARE_SIZE,
-                                                            picture_size * DRAW_SCALE,
-                                                            picture_size * DRAW_SCALE))
+        return self._display.blit(scaled_image, pygame.Rect(co_x * constants.DRAW_SCALE * constants.SQUARE_SIZE,
+                                                            co_y * constants.DRAW_SCALE * constants.SQUARE_SIZE,
+                                                            picture_size * constants.DRAW_SCALE,
+                                                            picture_size * constants.DRAW_SCALE))
 
     def draw(self, color: (int, int, int), rect: pygame.Rect):
         pygame.draw.rect(self._display, color, rect)
@@ -61,4 +57,4 @@ class Viewer(metaclass=MetaSingleton):
         return self._screen
 
 
-VIEWER: Viewer = Viewer(MAIN_BOARD_WIDTH, MAIN_BOARD_HEIGHT)
+VIEWER: Viewer = Viewer(constants.MAIN_BOARD_WIDTH, constants.MAIN_BOARD_HEIGHT)
