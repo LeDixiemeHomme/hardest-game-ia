@@ -33,6 +33,19 @@ class Viewer(metaclass=MetaSingleton):
         size = constants.SQUARE_SIZE * constants.DRAW_SCALE
         return pygame.Rect(left_arg * constants.DRAW_SCALE, top_arg * constants.DRAW_SCALE, size, size)
 
+    @staticmethod
+    def direction_from_key_down_value(key_down: pygame.KEYDOWN) -> Direction:
+        direction: Direction = Direction.STAY
+        if key_down == pygame.K_LEFT:
+            direction = Direction.LEFT
+        elif key_down == pygame.K_RIGHT:
+            direction = Direction.RIGHT
+        elif key_down == pygame.K_UP:
+            direction = Direction.UP
+        elif key_down == pygame.K_DOWN:
+            direction = Direction.DOWN
+        return direction
+
     def draw_image(self, picture_path: str, picture_size: int, co_x: int, co_y: int) -> pygame.Rect:
         image = pygame.image.load(picture_path)
         scaled_image = pygame.transform.scale(image, (picture_size, picture_size))
