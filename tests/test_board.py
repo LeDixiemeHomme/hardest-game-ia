@@ -2,6 +2,7 @@ import unittest
 from typing import List
 
 from project.custom_exception.out_of_bound_block_position_exception import OutOfBoundBlockPositionException
+from project.model.agent import Agent
 from project.model.board import Board, Position, SquareType, Obstacle
 from project.model.direction import Direction
 from project.model.movement import Movement
@@ -22,6 +23,8 @@ class TestBoard(unittest.TestCase):
         self.position_empty: Position = Position(2, 2)
         self.position_goal: Position = Position(5, 5)
 
+        self.agent: Agent = Agent(position=self.position_start)
+
         self.position_out_under_under: Position = Position(0, 0)
         self.position_out_under_in: Position = Position(0, 4)
         self.position_out_under_over: Position = Position(0, 10)
@@ -39,7 +42,9 @@ class TestBoard(unittest.TestCase):
 
         self.board: Board = Board(height=board_height, width=board_width,
                                   position_start=self.position_start, position_goal=self.position_goal,
-                                  list_of_obstacle=[self.obstacle_next_to_start, self.obstacle_next_to_wall])
+                                  list_of_obstacle=[self.obstacle_next_to_start, self.obstacle_next_to_wall],
+                                  agent=self.agent)
+        self.board.instantiate_singleton_viewer()
 
     def test_should_get_square_type_with_position_start_from_board_return_START(self):
         self.assertEqual(SquareType.START, self.board.get_square_type_from_board_by_position(self.position_start))
