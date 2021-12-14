@@ -1,5 +1,5 @@
 from project.constants import constants
-from project.display.viewer import VIEWER
+from project.display.viewer import Viewer
 
 from project.model.pattern import Pattern
 from project.model.position import Position
@@ -20,26 +20,26 @@ class Obstacle:
         self._pattern_state = 0
         self._temp_type = SquareType.EMPTY
 
-    def draw_obstacle(self):
-        VIEWER.draw_image(picture_path=self._picture_path, picture_size=self._picture_size,
+    def draw(self, viewer: Viewer):
+        viewer.draw_image(picture_path=self._picture_path, picture_size=self._picture_size,
                           co_x=self._position.co_x, co_y=self._position.co_y)
 
     def is_position_inside(self, position_to_test: Position) -> bool:
         return self._position.co_x <= position_to_test.co_x <= self._position.co_x + constants.SQUARE_SIZE \
                and self._position.co_y <= position_to_test.co_y <= self._position.co_y + constants.SQUARE_SIZE
 
-    def move(self, next_square: Square):
+    def move(self, next_square: Square, viewer: Viewer):
         # draw color type on the current position
-        VIEWER.draw(color=constants.COLOR_WITH_TYPE.get(self._temp_type),
-                    rect=VIEWER.create_rectangle(left_arg=self._position.co_x,
+        viewer.draw(color=constants.COLOR_WITH_TYPE.get(self._temp_type),
+                    rect=viewer.create_rectangle(left_arg=self._position.co_x,
                                                  top_arg=self._position.co_y))
 
         # update obstacle position and temp_type
-        self.position = next_square.position
-        self.temp_type = next_square.square_type
+        self._position = next_square.position
+        self._temp_type = next_square.square_type
 
         # draw obstacle picture on the next_position
-        self.draw_obstacle()
+        self.draw(viewer=viewer)
 
         # increase pattern state when the move is done
         self.increment_pattern_state()

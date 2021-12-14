@@ -3,6 +3,7 @@ import pygame
 from project.custom_exception.wrong_display_size_exception import WrongDisplaySizeException
 from project.metaSingleton.MetaSingleton import MetaSingleton
 from project.constants import constants
+from project.model.direction import Direction
 
 
 class Viewer(metaclass=MetaSingleton):
@@ -23,7 +24,7 @@ class Viewer(metaclass=MetaSingleton):
     def _init_display(self, width: int, height: int):
         if width > 20 or height > 20:
             raise WrongDisplaySizeException(width, height)
-        height_border_size, width_border_size = 1, 1
+        height_border_size = width_border_size = 1
         my_display = self._screen.set_mode(((width_border_size + width + width_border_size) * constants.DRAW_SCALE,
                                             (height_border_size + height + height_border_size) * constants.DRAW_SCALE))
         return my_display
@@ -32,6 +33,19 @@ class Viewer(metaclass=MetaSingleton):
     def create_rectangle(left_arg: int, top_arg: int) -> pygame.Rect:
         size = constants.SQUARE_SIZE * constants.DRAW_SCALE
         return pygame.Rect(left_arg * constants.DRAW_SCALE, top_arg * constants.DRAW_SCALE, size, size)
+
+    @staticmethod
+    def direction_from_key_down_value(key_down: pygame.KEYDOWN) -> Direction:
+        direction: Direction = Direction.STAY
+        if key_down == pygame.K_LEFT:
+            direction = Direction.LEFT
+        elif key_down == pygame.K_RIGHT:
+            direction = Direction.RIGHT
+        elif key_down == pygame.K_UP:
+            direction = Direction.UP
+        elif key_down == pygame.K_DOWN:
+            direction = Direction.DOWN
+        return direction
 
     def draw_image(self, picture_path: str, picture_size: int, co_x: int, co_y: int) -> pygame.Rect:
         image = pygame.image.load(picture_path)
@@ -55,6 +69,3 @@ class Viewer(metaclass=MetaSingleton):
     @property
     def screen(self):
         return self._screen
-
-
-VIEWER: Viewer = Viewer(constants.MAIN_BOARD_WIDTH, constants.MAIN_BOARD_HEIGHT)
