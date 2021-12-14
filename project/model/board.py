@@ -5,7 +5,8 @@ from project.custom_exception.out_of_bound_block_position_exception import OutOf
 
 from project.constants import constants
 from project.logger.logger import Logger
-from project.display.viewer import VIEWER
+from project.display.viewer import Viewer
+from project.model.agent import Agent
 
 from project.model.direction import Direction
 from project.model.movement import Movement
@@ -20,7 +21,8 @@ stdout_logger = logger.stdout_log
 
 class Board:
     def __init__(self, width: int, height: int, position_start: Position, position_goal: Position,
-                 list_of_obstacle: List[Obstacle]):
+                 list_of_obstacle: List[Obstacle], agent: Agent):
+        self._viewer = None
         stdout_logger.debug("init board")
         self._position_start = position_start
         self._position_goal = position_goal
@@ -70,6 +72,34 @@ class Board:
                 raise OutOfBoundBlockPositionException(position=obstacle.position, square_type=SquareType.OBSTACLE,
                                                        width=self._width, height=self._height)
         return self._list_of_obstacle
+
+    def is_agent_position_on_goal_square(self):
+        return self._agent.position == self._position_goal
+
+    def is_agent_position_on_obstacle_square(self):
+        for obstacle in self._list_of_obstacle:
+            if self._agent.position == obstacle.position:
+                return True
+        return False
+
+    def draw_agent(self):
+        self._agent.draw(viewer=self.viewer)
+
+    def move_agent(self, direction: Direction):
+        current_position: Position = self._agent.position
+        current_position_type: SquareType = self._agent.temp_type
+        current_movement: Movement = Movement(direction=direction)
+        try:
+            next_position: Position = self.get_position_after_movement(current_position=current_position,
+                                                                       current_movement=current_movement)
+            next_square_type: SquareType = self.get_square_type_from_board_by_position(position=next_position)
+        except OutOfBoundBlockPositionException:
+            next_position: Position = current_position
+            next_square_type = current_position_type
+
+        # draw the agent on the next block
+        next_square: Square = Square(position=next_position, square_type=next_square_type)
+        self._agent.move(next_square=next_square, viewer=self.viewer)
 
     def move_obstacles(self):
         VIEWER.set_tick(time_to_stop=6)

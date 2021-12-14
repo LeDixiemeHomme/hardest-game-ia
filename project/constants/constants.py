@@ -14,6 +14,8 @@ MAIN_BOARD_HEIGHT = 3
 
 BASE_PATH: str = os.path.abspath("..") + '/'
 
+AGENT_PICTURE_PATH: str = BASE_PATH + "static/agent.png"
+
 OBSTACLE_PICTURE_PATH: str = BASE_PATH + "static/obstacle.png"
 
 ICON_PICTURE_PATH: str = BASE_PATH + "static/artificial-intelligence.png"
