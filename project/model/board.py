@@ -1,6 +1,6 @@
-import pygame
 from typing import List
 
+from project.custom_exception.none_instantiate_singleton_viewer_exception import NoneInstantiateSingletonViewerException
 from project.custom_exception.out_of_bound_block_position_exception import OutOfBoundBlockPositionException
 
 from project.constants import constants
@@ -29,10 +29,14 @@ class Board:
         self._list_of_obstacle: List[Obstacle] = list_of_obstacle
         self._width = width
         self._height = height
+        self._agent = agent
         self._init_start()
         self._init_goal()
         self._init_list_of_obstacle()
         self._list_of_square: List[Square] = self._init_list_of_square()
+
+    def instantiate_singleton_viewer(self):
+        self._viewer: Viewer = Viewer(width=self._width, height=self._height)
 
     def _init_start(self) -> SquareType:
         if not self.is_position_inside_board_boundaries(self._position_start):
@@ -102,14 +106,12 @@ class Board:
         self._agent.move(next_square=next_square, viewer=self.viewer)
 
     def move_obstacles(self):
-        VIEWER.set_tick(time_to_stop=6)
+        self.viewer.set_tick(time_to_stop=6)
         for obstacle in self._list_of_obstacle:
-
             current_position: Position = obstacle.position
             current_position_type: SquareType = obstacle.temp_type
             current_movement: Movement = obstacle.pattern.list_of_movements[
                 obstacle.pattern_state % len(obstacle.pattern.list_of_movements)]
-
             try:
                 next_position: Position = self.get_position_after_movement(current_position=current_position,
                                                                            current_movement=current_movement)
@@ -120,7 +122,7 @@ class Board:
 
             # draw the obstacle on the next block
             next_square: Square = Square(position=next_position, square_type=next_square_type)
-            obstacle.move(next_square=next_square)
+            obstacle.move(next_square=next_square, viewer=self.viewer)
 
             # update the list of square to set the new type at the current_position and the next_position
             self.update_list_of_square(position=current_position, square_type=current_position_type)
@@ -128,9 +130,9 @@ class Board:
 
     def draw_board(self):
         for square in self._list_of_square:
-            rect: pygame.Rect = VIEWER.create_rectangle(
+            rect = self.viewer.create_rectangle(
                 left_arg=square.position.co_x, top_arg=square.position.co_y)
-            VIEWER.draw(color=constants.COLOR_WITH_TYPE.get(square.square_type), rect=rect)
+            self.viewer.draw(color=constants.COLOR_WITH_TYPE.get(square.square_type), rect=rect)
 
     def get_square_type_from_board_by_position(self, position: Position) -> SquareType:
         if not self.is_position_inside_board_boundaries(position_to_test=position):
@@ -196,6 +198,12 @@ class Board:
     @property
     def position_goal(self):
         return self._position_goal
+
+    @property
+    def viewer(self):
+        if self._viewer is None:
+            raise NoneInstantiateSingletonViewerException(method_name=self.instantiate_singleton_viewer.__name__)
+        return self._viewer
 
     def __str__(self) -> str:
         string: str = "Board : { height = " + str(self._height) + "; width = " + str(
