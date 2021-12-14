@@ -1,35 +1,24 @@
 import unittest
+import pytest
 
 from project.model.board import Obstacle, Position
 from project.model.pattern import Pattern
 
 
-class TestObstacle(unittest.TestCase):
+class TestObstacle:
+    obstacle: Obstacle = Obstacle(position=Position(5, 5), pattern=Pattern())
+    coordinates: [[float, float]] = [[5, 5], [0, 0], [10, 10], [0, 10], [10, 0], [4, 4]]
+    positions: [Position] = []
+    for position in coordinates:
+        positions.append(Position(co_x=position[0], co_y=position[1]))
 
-    def setUp(self) -> None:
-        self.obstacle: Obstacle = Obstacle(position=Position(5, 5), pattern=Pattern())
-        coordinates: [[float, float]] = [[5, 5], [0, 0], [10, 10], [0, 10], [10, 0], [4, 4]]
-        self.positions: [Position] = []
-        for position in coordinates:
-            self.positions.append(Position(co_x=position[0], co_y=position[1]))
+    @pytest.mark.parametrize("tested_position", [positions[1], positions[2], positions[3],
+                                                 positions[4], positions[5]])
+    def test_should_is_position_inside_with_position_return_false(self, tested_position):
+        assert not self.obstacle.is_position_inside(tested_position)
 
     def test_should_is_position_inside_with_position_0_return_true(self):
-        self.assertTrue(self.obstacle.is_position_inside(self.positions[0]))
-
-    def test_should_is_position_inside_with_position_1_return_false(self):
-        self.assertFalse(self.obstacle.is_position_inside(self.positions[1]))
-
-    def test_should_is_position_inside_with_position_2_return_false(self):
-        self.assertFalse(self.obstacle.is_position_inside(self.positions[2]))
-
-    def test_should_is_position_inside_with_position_3_return_false(self):
-        self.assertFalse(self.obstacle.is_position_inside(self.positions[3]))
-
-    def test_should_is_position_inside_with_position_4_return_false(self):
-        self.assertFalse(self.obstacle.is_position_inside(self.positions[4]))
-
-    def test_should_is_position_inside_with_position_5_return_false(self):
-        self.assertFalse(self.obstacle.is_position_inside(self.positions[5]))
+        assert self.obstacle.is_position_inside(self.positions[0])
 
 
 if __name__ == '__main__':
