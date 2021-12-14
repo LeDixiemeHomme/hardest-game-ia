@@ -92,6 +92,6 @@ if __name__ == '__main__':
             lose = True
 
     if win:
-        print("You win")
+        stdout_logger.debug("You win")
     if lose:
-        print("You lose")
+        stdout_logger.debug("You lose")
