@@ -12,6 +12,10 @@ MAIN_BOARD_WIDTH = 17
 
 MAIN_BOARD_HEIGHT = 3
 
+TEST_BOARD_WIDTH = 3
+
+TEST_BOARD_HEIGHT = 3
+
 BASE_PATH: str = os.path.abspath("..") + '/'
 
 AGENT_PICTURE_PATH: str = BASE_PATH + "static/agent.png"
