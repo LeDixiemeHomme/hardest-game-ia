@@ -1,6 +1,5 @@
 import pygame
 
-from project.custom_exception.wrong_display_size_exception import WrongDisplaySizeException
 from project.metaSingleton.MetaSingleton import MetaSingleton
 from project.constants import constants
 from project.model.direction import Direction
@@ -22,8 +21,6 @@ class Viewer(metaclass=MetaSingleton):
         return screen
 
     def _init_display(self, width: int, height: int):
-        if width > 20 or height > 20:
-            raise WrongDisplaySizeException(width, height)
         height_border_size = width_border_size = 1
         my_display = self._screen.set_mode(((width_border_size + width + width_border_size) * constants.DRAW_SCALE,
                                             (height_border_size + height + height_border_size) * constants.DRAW_SCALE))
