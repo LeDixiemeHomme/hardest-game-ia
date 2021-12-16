@@ -7,7 +7,6 @@ from project.constants import constants
 from project.custom_exception.wrong_display_size_exception import WrongDisplaySizeException
 from project.logger.logger import Logger
 from project.display.viewer import Viewer
-from project.model.agent import Agent
 
 from project.model.direction import Direction
 from project.model.movement import Movement
@@ -21,10 +20,10 @@ stdout_logger = logger.stdout_log
 
 
 class Board:
-    def __init__(self, width: int, height: int, position_start: Position, position_goal: Position,
-                 list_of_obstacle: List[Obstacle], agent: Agent):
+    def __init__(self, width: int, height: int,
+                 position_start: Position, position_goal: Position,
+                 list_of_obstacle: List[Obstacle]):
         self._viewer = None
-        self._agent = agent
         self._check_board_size(width=width, height=height)
         self._check_init_position(position_start=position_start, position_goal=position_goal,
                                   list_of_obstacle=list_of_obstacle)
@@ -72,7 +71,7 @@ class Board:
 
         return list_of_square
 
-    def _get_square_type_from_board_by_position(self, position: Position) -> SquareType:
+    def get_square_type_from_board_by_position(self, position: Position) -> SquareType:
         self._check_boundaries(tested_position=position, square_type_tested=SquareType.OBSTACLE)
         return self._list_of_square[
             self._get_index_of_list_of_square_by_position(position)].square_type
@@ -81,7 +80,7 @@ class Board:
         self._check_boundaries(tested_position=position, square_type_tested=SquareType.OBSTACLE)
         return self._height * position.co_x - (self._height - position.co_y) - 1
 
-    def _get_position_after_movement(self, current_position: Position, current_movement: Movement) -> Position:
+    def get_position_after_movement(self, current_position: Position, current_movement: Movement) -> Position:
         self._check_boundaries(tested_position=current_position, square_type_tested=SquareType.OBSTACLE)
         position_after_movement: Position = Position(co_x=current_position.co_x, co_y=current_position.co_y)
 
@@ -102,56 +101,28 @@ class Board:
     def _is_position_inside_board_boundaries(self, position_to_test: Position) -> bool:
         return 0 < position_to_test.co_x <= self._width and 0 < position_to_test.co_y <= self._height
 
-    def is_agent_position_on_goal_square(self):
-        return self._agent.position == self._position_goal
-
-    def is_agent_position_on_obstacle_square(self):
-        for obstacle in self._list_of_obstacle:
-            if obstacle.is_position_inside(position_to_test=self._agent.position):
-                return True
-        return False
-
     def instantiate_singleton_viewer(self):
         stdout_logger.debug("Instantiate board singleton viewer ...")
         self._viewer: Viewer = Viewer(width=self._width, height=self._height)
-
-    def draw_agent(self):
-        self._agent.draw(viewer=self.viewer)
-
-    def move_agent(self, direction: Direction):
-        current_position: Position = self._agent.position
-        current_position_type: SquareType = self._agent.temp_type
-        current_movement: Movement = Movement(direction=direction)
-        try:
-            next_position: Position = self._get_position_after_movement(current_position=current_position,
-                                                                        current_movement=current_movement)
-            next_square_type: SquareType = self._get_square_type_from_board_by_position(position=next_position)
-        except OutOfBoundBlockPositionException:
-            next_position: Position = current_position
-            next_square_type = current_position_type
-
-        # draw the agent on the next block
-        next_square: Square = Square(position=next_position, square_type=next_square_type)
-        self._agent.move(next_square=next_square, viewer=self.viewer)
 
     def move_obstacles(self):
         self.viewer.set_tick(time_to_stop=6)
         for obstacle in self._list_of_obstacle:
             current_position: Position = obstacle.position
-            current_position_type: SquareType = obstacle.temp_type
+            current_position_type: SquareType = obstacle.square_type
             current_movement: Movement = obstacle.pattern.list_of_movements[
                 obstacle.pattern_state % len(obstacle.pattern.list_of_movements)]
             try:
-                next_position: Position = self._get_position_after_movement(current_position=current_position,
-                                                                            current_movement=current_movement)
-                next_square_type: SquareType = self._get_square_type_from_board_by_position(position=next_position)
+                next_position: Position = self.get_position_after_movement(current_position=current_position,
+                                                                           current_movement=current_movement)
+                next_square_type: SquareType = self.get_square_type_from_board_by_position(position=next_position)
             except OutOfBoundBlockPositionException:
                 next_position: Position = current_position
                 next_square_type = current_position_type
 
             # draw the obstacle on the next block
             next_square: Square = Square(position=next_position, square_type=next_square_type)
-            obstacle.move(next_square=next_square, viewer=self.viewer)
+            obstacle.move_obstacle_if_possible(next_square=next_square, viewer=self.viewer)
 
             # update the list of square to set the new type at the current_position and the next_position
             self.update_list_of_square(position=current_position, square_type=current_position_type)
@@ -161,7 +132,7 @@ class Board:
         for square in self._list_of_square:
             rect = self.viewer.create_rectangle(
                 left_arg=square.position.co_x, top_arg=square.position.co_y)
-            self.viewer.draw(color=constants.COLOR_WITH_TYPE.get(square.square_type), rect=rect)
+            self.viewer.viewer_draw(color=constants.COLOR_WITH_TYPE.get(square.square_type), rect=rect)
 
     @property
     def list_of_square(self):
@@ -190,10 +161,6 @@ class Board:
     @property
     def position_goal(self):
         return self._position_goal
-
-    @property
-    def agent(self):
-        return self._agent
 
     @property
     def viewer(self):
