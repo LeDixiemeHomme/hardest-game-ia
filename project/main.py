@@ -24,7 +24,14 @@ CROSS_PATTERN: Pattern = Pattern(list_of_movements=
                                   Movement(direction=Direction.DOWN),
                                   Movement(direction=Direction.UP)])
 
-UP_PATTERN: Pattern = Pattern(list_of_movements=[Movement(direction=Direction.UP)])
+UP_PATTERN: Pattern = Pattern(list_of_movements=[Movement(direction=Direction.UP),
+                                                 Movement(direction=Direction.UP),
+                                                 Movement(direction=Direction.UP),
+                                                 Movement(direction=Direction.DOWN),
+                                                 Movement(direction=Direction.DOWN),
+                                                 Movement(direction=Direction.DOWN)])
+
+OBSTACLE_UP_PATTERN: Obstacle = Obstacle(position=Position(co_x=3, co_y=3), pattern=UP_PATTERN)
 
 OBSTACLE_CROSS_PATTERN1: Obstacle = Obstacle(position=Position(5, 1), pattern=CROSS_PATTERN)
 
@@ -44,51 +51,48 @@ TEST_START_POSITION: Position = Position(1, 2)
 
 TEST_GOAL_POSITION: Position = Position(3, 2)
 
-MAIN_AGENT: Agent = Agent(position=MAIN_START_POSITION)
-
-TEST_AGENT: Agent = Agent(position=TEST_START_POSITION)
-
-MAIN_BOARD: Board = Board(width=constants.MAIN_BOARD_WIDTH, height=constants.MAIN_BOARD_HEIGHT,
-                          position_start=MAIN_START_POSITION, position_goal=MAIN_GOAL_POSITION,
-                          list_of_obstacle=[
-                              OBSTACLE_CROSS_PATTERN1, OBSTACLE_CROSS_PATTERN2, OBSTACLE_CROSS_PATTERN3,
-                              OBSTACLE_CROSS_PATTERN4, OBSTACLE_CROSS_PATTERN5
-                          ],
-                          agent=MAIN_AGENT)
-
-TEST_BOARD: Board = Board(width=constants.TEST_BOARD_WIDTH, height=constants.TEST_BOARD_HEIGHT,
-                          position_start=TEST_START_POSITION, position_goal=TEST_GOAL_POSITION,
-                          list_of_obstacle=[],
-                          agent=TEST_AGENT)
-
 if __name__ == '__main__':
-
     running = True
     lose = win = False
-    # board = TEST_BOARD
-    board = MAIN_BOARD
+
+    MAIN_BOARD: Board = Board(width=constants.MAIN_BOARD_WIDTH, height=constants.MAIN_BOARD_HEIGHT,
+                              position_start=MAIN_START_POSITION, position_goal=MAIN_GOAL_POSITION,
+                              list_of_obstacle=[
+                                  OBSTACLE_CROSS_PATTERN1,
+                                  OBSTACLE_CROSS_PATTERN2, OBSTACLE_CROSS_PATTERN3,
+                                  OBSTACLE_CROSS_PATTERN4, OBSTACLE_CROSS_PATTERN5
+                              ])
+
+    TEST_BOARD: Board = Board(width=constants.TEST_BOARD_WIDTH, height=constants.TEST_BOARD_HEIGHT,
+                              position_start=TEST_START_POSITION, position_goal=TEST_GOAL_POSITION,
+                              list_of_obstacle=[OBSTACLE_UP_PATTERN])
+
+    board: Board = MAIN_BOARD
+    # board: Board = TEST_BOARD
 
     board.instantiate_singleton_viewer()
-    my_display = board.viewer.display
-    screen = board.viewer.screen
+
+    agent: Agent = Agent(board=board)
 
     stdout_logger.debug("Start drawing board ...")
-    board.draw_board()
+    agent.board.draw_board()
 
     while running and not win and not lose:
-        screen.update()
+        agent.board.viewer.screen.update()
         for event in pygame.event.get():
-            # stdout_logger.debug(str(event))
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                board.move_agent(board.viewer.direction_from_key_down_value(key_down=event.key))
+                movement_next: Movement = Movement(
+                    direction=board.viewer.direction_from_key_down_value(key_down=event.key))
+                agent.move_agent_if_possible(requested_movement=movement_next)
 
-        board.move_obstacles()
-        board.draw_agent()
-        if board.is_agent_position_on_goal_square():
+        agent.board.move_obstacles()
+        agent.draw_image_on_current_position()
+
+        if agent.is_position_on_goal_square():
             win = True
-        if board.is_agent_position_on_obstacle_square():
+        if agent.is_position_on_obstacle_square():
             lose = True
 
     if win:
