@@ -8,23 +8,22 @@ from project.model.direction import Direction
 class Viewer(metaclass=MetaSingleton):
     def __init__(self, width: int, height: int):
         pygame.init()
-        self._screen = self._init_screen()
-        self._display = self._init_display(width=width, height=height)
+        self._init_screen()
+        self._init_display(width=width, height=height)
         self._clock = pygame.time.Clock()
 
-    @staticmethod
-    def _init_screen():
+    def _init_screen(self):
         screen = pygame.display
         screen.set_caption("Hardest game IA")
         path_image: str = constants.ICON_PICTURE_PATH
         screen.set_icon(pygame.image.load(path_image))
-        return screen
+        self._screen = screen
 
     def _init_display(self, width: int, height: int):
         height_border_size = width_border_size = 1
         my_display = self._screen.set_mode(((width_border_size + width + width_border_size) * constants.DRAW_SCALE,
                                             (height_border_size + height + height_border_size) * constants.DRAW_SCALE))
-        return my_display
+        self._display = my_display
 
     @staticmethod
     def create_rectangle(left_arg: int, top_arg: int) -> pygame.Rect:
@@ -44,7 +43,7 @@ class Viewer(metaclass=MetaSingleton):
             direction = Direction.DOWN
         return direction
 
-    def draw_image(self, picture_path: str, picture_size: int, co_x: int, co_y: int) -> pygame.Rect:
+    def viewer_draw_image(self, picture_path: str, picture_size: int, co_x: int, co_y: int) -> pygame.Rect:
         image = pygame.image.load(picture_path)
         scaled_image = pygame.transform.scale(image, (picture_size, picture_size))
 
@@ -53,7 +52,7 @@ class Viewer(metaclass=MetaSingleton):
                                                             picture_size * constants.DRAW_SCALE,
                                                             picture_size * constants.DRAW_SCALE))
 
-    def draw(self, color: (int, int, int), rect: pygame.Rect):
+    def viewer_draw(self, color: (int, int, int), rect: pygame.Rect):
         pygame.draw.rect(self._display, color, rect)
 
     def set_tick(self, time_to_stop: int):
