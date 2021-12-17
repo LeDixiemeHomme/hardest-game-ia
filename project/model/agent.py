@@ -45,8 +45,7 @@ class Agent:
 
     def move_agent_if_possible(self, requested_movement: Movement):
         try:
-            next_position: Position = self._board.get_position_after_movement(
-                current_position=self._position, current_movement=requested_movement)
+            next_position: Position = self._position.apply_movement(movement=requested_movement)
             next_square_type: SquareType = self._board.get_square_type_from_board_by_position(position=next_position)
         except OutOfBoundBlockPositionException:
             next_position: Position = self._position
