@@ -1,4 +1,3 @@
-import unittest
 import pytest
 
 from project.model.board import Obstacle, Position
@@ -20,7 +19,3 @@ class TestObstacle:
 
     def test_should_is_position_inside_with_position_0_return_true(self):
         assert self.obstacle.is_position_same(self.obstacle_position)
-
-
-if __name__ == '__main__':
-    unittest.main()

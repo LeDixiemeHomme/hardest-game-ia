@@ -1,11 +1,9 @@
-import unittest
 from typing import List
 
 import pytest
 
-from project.custom_exception.out_of_bound_block_position_exception import OutOfBoundBlockPositionException
 from project.custom_exception.wrong_display_size_exception import WrongDisplaySizeException
-from project.model.board import Board, Position, SquareType, Obstacle, Direction, Movement
+from project.model.board import Board, Position, SquareType, Obstacle, Direction, Movement, OutOfBoundBlockPositionException
 from project.model.pattern import Pattern
 
 
@@ -58,13 +56,6 @@ class TestBoard:
         with pytest.raises(OutOfBoundBlockPositionException):
             self.board.get_square_type_from_board_by_position(tested_position)
 
-    @pytest.mark.parametrize("tested_position", positions_out)
-    def test_should_get_square_type_with_position_corresponding_square_type(self, tested_position):
-        assert not self.board._is_position_inside_board_boundaries(position_to_test=tested_position)
-
-    def test_should_is_position_inside_board_boundaries_with_position_start_return_true(self):
-        assert self.board._is_position_inside_board_boundaries(position_to_test=self.position_start)
-
     def test_should_get_index_of_list_of_square_by_position_with_position_start_return_0(self):
         expected_index: int = 0
         assert expected_index == self.board._get_index_of_list_of_square_by_position(position=self.position_start)
@@ -73,19 +64,7 @@ class TestBoard:
     def test_should_get_index_of_list_of_square_by_position_with_position_start_raise_exception(self, tested_position):
         with pytest.raises(OutOfBoundBlockPositionException):
             self.board._get_index_of_list_of_square_by_position(position=tested_position)
-
-    @pytest.mark.parametrize("tested_position", positions_out)
-    def test_should_get_position_after_movement_with_position_out_raise_exception(self, tested_position):
-        with pytest.raises(OutOfBoundBlockPositionException):
-            self.board.get_position_after_movement(current_position=tested_position,
-                                                   current_movement=self.right_movement)
-
-    @pytest.mark.parametrize("movement, position_expected", position_after_movement)
-    def test_should_get_position_after_movement(self, movement, position_expected):
-        result_position: Position = self.board.get_position_after_movement(current_position=self.position_empty,
-                                                                           current_movement=movement)
-        assert position_expected == result_position
-
+            
     def test_should_move_obstacles_not_erase_start_position(self):
         expected_log: List[SquareType] = [SquareType.START, SquareType.OBSTACLE, SquareType.START]
         square_type_log: List[SquareType] = []
@@ -112,7 +91,3 @@ class TestBoard:
         with pytest.raises(WrongDisplaySizeException):
             Board(width=10, height=21, position_start=Position(1, 1), position_goal=Position(2, 2),
                   list_of_obstacle=[])
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -1,5 +1,3 @@
-import pytest
-
 from project.model.agent import Agent
 from project.model.board import Board, Position
 from project.model.obstacle import Obstacle
