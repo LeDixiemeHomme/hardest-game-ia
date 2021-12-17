@@ -1,17 +1,16 @@
 from typing import List
+from copy import copy
 
 from project.custom_exception.none_instantiate_singleton_viewer_exception import NoneInstantiateSingletonViewerException
-from project.custom_exception.out_of_bound_block_position_exception import OutOfBoundBlockPositionException
 
 from project.constants import constants
 from project.custom_exception.wrong_display_size_exception import WrongDisplaySizeException
 from project.logger.logger import Logger
 from project.display.viewer import Viewer
 
-from project.model.direction import Direction
 from project.model.movement import Movement
 from project.model.obstacle import Obstacle
-from project.model.position import Position
+from project.model.position import Position, OutOfBoundBlockPositionException
 from project.model.square import Square
 from project.model.square_type import SquareType
 
@@ -29,20 +28,15 @@ class Board:
                                   list_of_obstacle=list_of_obstacle)
         self._list_of_square: List[Square] = self._init_list_of_square()
 
-    def _check_boundaries(self, tested_position: Position, square_type_tested: SquareType):
-        if not self._is_position_inside_board_boundaries(position_to_test=tested_position):
-            raise OutOfBoundBlockPositionException(position=tested_position, square_type=square_type_tested,
-                                                   width=self._width, height=self._height)
-
     def _check_init_position(self, position_start: Position, position_goal: Position, list_of_obstacle: List[Obstacle]):
-        self._check_boundaries(tested_position=position_start, square_type_tested=SquareType.START)
+        position_start.check_boundaries(width=self._width, height=self._height)
         self._position_start = position_start
 
-        self._check_boundaries(tested_position=position_goal, square_type_tested=SquareType.GOAL)
+        position_goal.check_boundaries(width=self._width, height=self._height)
         self._position_goal = position_goal
 
         for obstacle in list_of_obstacle:
-            self._check_boundaries(tested_position=obstacle.position, square_type_tested=SquareType.OBSTACLE)
+            obstacle.position.check_boundaries(width=self._width, height=self._height)
         self._list_of_obstacle: List[Obstacle] = list_of_obstacle
 
     def _check_board_size(self, width: int, height: int):
@@ -72,34 +66,13 @@ class Board:
         return list_of_square
 
     def get_square_type_from_board_by_position(self, position: Position) -> SquareType:
-        self._check_boundaries(tested_position=position, square_type_tested=SquareType.OBSTACLE)
+        position.check_boundaries(width=self._width, height=self._height)
         return self._list_of_square[
             self._get_index_of_list_of_square_by_position(position)].square_type
 
     def _get_index_of_list_of_square_by_position(self, position: Position) -> int:
-        self._check_boundaries(tested_position=position, square_type_tested=SquareType.OBSTACLE)
+        position.check_boundaries(width=self._width, height=self._height)
         return self._height * position.co_x - (self._height - position.co_y) - 1
-
-    def get_position_after_movement(self, current_position: Position, current_movement: Movement) -> Position:
-        self._check_boundaries(tested_position=current_position, square_type_tested=SquareType.OBSTACLE)
-        position_after_movement: Position = Position(co_x=current_position.co_x, co_y=current_position.co_y)
-
-        direction: Direction = current_movement.direction
-        length: int = current_movement.length
-
-        if direction == Direction.UP:
-            position_after_movement.co_y -= length
-        elif direction == Direction.DOWN:
-            position_after_movement.co_y += length
-        elif direction == Direction.LEFT:
-            position_after_movement.co_x -= length
-        elif direction == Direction.RIGHT:
-            position_after_movement.co_x += length
-
-        return position_after_movement
-
-    def _is_position_inside_board_boundaries(self, position_to_test: Position) -> bool:
-        return 0 < position_to_test.co_x <= self._width and 0 < position_to_test.co_y <= self._height
 
     def instantiate_singleton_viewer(self):
         stdout_logger.debug("Instantiate board singleton viewer ...")
@@ -108,25 +81,21 @@ class Board:
     def move_obstacles(self):
         self.viewer.set_tick(time_to_stop=6)
         for obstacle in self._list_of_obstacle:
-            current_position: Position = obstacle.position
-            current_position_type: SquareType = obstacle.square_type
-            current_movement: Movement = obstacle.pattern.list_of_movements[
-                obstacle.pattern_state % len(obstacle.pattern.list_of_movements)]
+            movement_to_apply: Movement = obstacle.get_movement_to_do()
             try:
-                next_position: Position = self.get_position_after_movement(current_position=current_position,
-                                                                           current_movement=current_movement)
-                next_square_type: SquareType = self.get_square_type_from_board_by_position(position=next_position)
+                position_after_movement: Position = \
+                    obstacle.position.apply_movement(movement=movement_to_apply)
+                next_square_type: SquareType = self.get_square_type_from_board_by_position(
+                    position=position_after_movement)
             except OutOfBoundBlockPositionException:
-                next_position: Position = current_position
-                next_square_type = current_position_type
+                position_after_movement = obstacle.position
+                next_square_type = obstacle.square_type
 
-            # draw the obstacle on the next block
-            next_square: Square = Square(position=next_position, square_type=next_square_type)
-            obstacle.move_obstacle_if_possible(next_square=next_square, viewer=self.viewer)
+            self.update_list_of_square(position=position_after_movement, square_type=SquareType.OBSTACLE)
+            self.update_list_of_square(position=obstacle.position, square_type=obstacle.square_type)
 
-            # update the list of square to set the new type at the current_position and the next_position
-            self.update_list_of_square(position=current_position, square_type=current_position_type)
-            self.update_list_of_square(position=next_square.position, square_type=SquareType.OBSTACLE)
+            obstacle.move_obstacle_if_possible(square_to_move_on=Square(
+                position=position_after_movement, square_type=next_square_type), viewer=self.viewer)
 
     def draw_board(self):
         for square in self._list_of_square:
