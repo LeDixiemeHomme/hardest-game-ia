@@ -41,7 +41,7 @@ OBSTACLE_CROSS_PATTERN3: Obstacle = Obstacle(position=Position(9, 1), pattern=CR
 
 OBSTACLE_CROSS_PATTERN4: Obstacle = Obstacle(position=Position(11, 3), pattern=CROSS_PATTERN)
 
-OBSTACLE_CROSS_PATTERN5: Obstacle = Obstacle(position=Position(13, 1), pattern=CROSS_PATTERN)
+OBSTACLE_CROSS_PATTERN5: Obstacle = Obstacle(position=Position(15, 2), pattern=CROSS_PATTERN)
 
 MAIN_START_POSITION: Position = Position(2, 2)
 
@@ -65,14 +65,14 @@ if __name__ == '__main__':
 
     TEST_BOARD: Board = Board(width=constants.TEST_BOARD_WIDTH, height=constants.TEST_BOARD_HEIGHT,
                               position_start=TEST_START_POSITION, position_goal=TEST_GOAL_POSITION,
-                              list_of_obstacle=[OBSTACLE_UP_PATTERN])
+                              list_of_obstacle=[])
 
     board: Board = MAIN_BOARD
     # board: Board = TEST_BOARD
 
     board.instantiate_singleton_viewer()
 
-    agent: Agent = Agent(board=board)
+    agent: Agent = Agent(board=board, position=board.position_start)
 
     stdout_logger.debug("Start drawing board ...")
     agent.board.draw_board()
