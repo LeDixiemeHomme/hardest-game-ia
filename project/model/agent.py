@@ -9,28 +9,28 @@ stdout_logger = logger.stdout_log
 
 class Agent:
     picture_path: str = constants.AGENT_PICTURE_PATH
-    picture_size: str = constants.PICTURE_SIZE
+    picture_size: int = constants.PICTURE_SIZE
 
-    def __init__(self, board: Board,
+    def __init__(self, board: Board, position: Position,
                  picture_path: str = picture_path,
                  picture_size: int = picture_size,
                  learning_rate: float = 1,
                  discount_factor: float = 0.5):
-        self._board = board
-        self._position = board.position_start
-        self._picture_path = picture_path
-        self._picture_size = picture_size
-        self._learning_rate = learning_rate
-        self._discount_factor = discount_factor
+        self._board: Board = board
+        self._position: Position = position
+        self._square_type: SquareType = SquareType.START
+        self._picture_path: str = picture_path
+        self._picture_size: int = picture_size
+        self._learning_rate: float = learning_rate
+        self._discount_factor: float = discount_factor
         self.__qtable = {}
-        self._square_type = SquareType.START
 
     def is_position_on_goal_square(self):
         return self._position == self._board.position_goal
 
     def is_position_on_obstacle_square(self):
         for obstacle in self._board.list_of_obstacle:
-            if obstacle.is_position_same(position_to_test=self._position):
+            if obstacle.position == self._position:
                 return True
         return False
 
@@ -65,10 +65,6 @@ class Agent:
     @property
     def board(self):
         return self._board
-
-    @position.setter
-    def position(self, position: Position):
-        self._position = position
 
     @property
     def learning_rate(self):
