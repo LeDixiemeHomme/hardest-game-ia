@@ -1,5 +1,4 @@
 from typing import List
-from copy import copy
 
 from project.custom_exception.none_instantiate_singleton_viewer_exception import NoneInstantiateSingletonViewerException
 
@@ -23,40 +22,52 @@ class Board:
                  position_start: Position, position_goal: Position,
                  list_of_obstacle: List[Obstacle]):
         self._viewer = None
-        self._check_board_size(width=width, height=height)
-        self._check_init_position(position_start=position_start, position_goal=position_goal,
-                                  list_of_obstacle=list_of_obstacle)
-        self._list_of_square: List[Square] = self._init_list_of_square()
+        self._list_of_square: List[Square] = self._init_list_of_square(
+            width=width, height=height, position_start=position_start,
+            position_goal=position_goal, list_of_obstacle=list_of_obstacle)
 
-    def _check_init_position(self, position_start: Position, position_goal: Position, list_of_obstacle: List[Obstacle]):
-        position_start.check_boundaries(width=self._width, height=self._height)
-        self._position_start = position_start
+    def instantiate_singleton_viewer(self):
+        stdout_logger.debug("Instantiate board singleton viewer ...")
+        self._viewer: Viewer = Viewer(width=self._width, height=self._height)
 
-        position_goal.check_boundaries(width=self._width, height=self._height)
-        self._position_goal = position_goal
-
-        for obstacle in list_of_obstacle:
-            obstacle.position.check_boundaries(width=self._width, height=self._height)
-        self._list_of_obstacle: List[Obstacle] = list_of_obstacle
-
-    def _check_board_size(self, width: int, height: int):
+    @staticmethod
+    def _check_board_size(width: int, height: int):
         if width > 20 or height > 20:
             raise WrongDisplaySizeException(width, height)
+
+    @staticmethod
+    def _check_init_position(width: int, height: int, position_start: Position,
+                             position_goal: Position, list_of_obstacle: List[Obstacle]):
+        position_start.check_boundaries(width=width, height=height)
+        position_goal.check_boundaries(width=width, height=height)
+        for obstacle in list_of_obstacle:
+            obstacle.position.check_boundaries(width=width, height=height)
+
+    def _init_list_of_square(self, width: int, height: int,
+                             position_start: Position, position_goal: Position,
+                             list_of_obstacle: List[Obstacle]) -> List[Square]:
+        self._check_board_size(width=width, height=height)
         self._width = width
         self._height = height
 
-    def _init_list_of_square(self) -> List[Square]:
+        self._check_init_position(width=width, height=height, position_start=position_start,
+                                  position_goal=position_goal, list_of_obstacle=list_of_obstacle)
+        self._position_start = position_start
+        self._position_goal = position_goal
+        self._list_of_obstacle: List[Obstacle] = list_of_obstacle
+
         list_of_square = []
+
         # dans range 1, size + 1 pour que position(0, 9) -> position(1, 10)
-        for x in range(1, self._width + 1):
-            for y in range(1, self._height + 1):
-                list_of_square.append(Square(position=Position(x, y), square_type=SquareType.EMPTY))
+        for x in range(1, width + 1):
+            for y in range(1, height + 1):
+                list_of_square.append(Square(position=Position(co_x=x, co_y=y), square_type=SquareType.EMPTY))
 
-        list_of_square[self._get_index_of_list_of_square_by_position(self._position_start)] = \
-            Square(position=self._position_start, square_type=SquareType.START)
+        list_of_square[self._get_index_of_list_of_square_by_position(position_start)] = \
+            Square(position=position_start, square_type=SquareType.START)
 
-        list_of_square[self._get_index_of_list_of_square_by_position(self._position_goal)] = \
-            Square(position=self._position_goal, square_type=SquareType.GOAL)
+        list_of_square[self._get_index_of_list_of_square_by_position(position_goal)] = \
+            Square(position=position_goal, square_type=SquareType.GOAL)
 
         for obstacle in self._list_of_obstacle:
             obstacle_position = obstacle.position
@@ -65,18 +76,13 @@ class Board:
 
         return list_of_square
 
-    def get_square_type_from_board_by_position(self, position: Position) -> SquareType:
-        position.check_boundaries(width=self._width, height=self._height)
-        return self._list_of_square[
-            self._get_index_of_list_of_square_by_position(position)].square_type
-
     def _get_index_of_list_of_square_by_position(self, position: Position) -> int:
         position.check_boundaries(width=self._width, height=self._height)
         return self._height * position.co_x - (self._height - position.co_y) - 1
 
-    def instantiate_singleton_viewer(self):
-        stdout_logger.debug("Instantiate board singleton viewer ...")
-        self._viewer: Viewer = Viewer(width=self._width, height=self._height)
+    def get_square_type_from_board_by_position(self, position: Position) -> SquareType:
+        return self._list_of_square[
+            self._get_index_of_list_of_square_by_position(position)].square_type
 
     def move_obstacles(self):
         self.viewer.set_tick(time_to_stop=6)
