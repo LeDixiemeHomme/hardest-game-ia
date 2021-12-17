@@ -3,7 +3,8 @@ from typing import List
 import pytest
 
 from project.custom_exception.wrong_display_size_exception import WrongDisplaySizeException
-from project.model.board import Board, Position, SquareType, Obstacle, Direction, Movement, OutOfBoundBlockPositionException
+from project.model.board import Board, Position, SquareType, Obstacle, Movement, OutOfBoundBlockPositionException
+from project.model.direction import Direction
 from project.model.pattern import Pattern
 
 
