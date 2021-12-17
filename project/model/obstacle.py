@@ -1,5 +1,6 @@
 from project.constants import constants
 from project.display.viewer import Viewer
+from project.model.movement import Movement
 
 from project.model.pattern import Pattern
 from project.model.position import Position
@@ -26,24 +27,25 @@ class Obstacle:
         viewer.viewer_draw_image(picture_path=self._picture_path, picture_size=self._picture_size,
                                  co_x=self._position.co_x, co_y=self._position.co_y)
 
+    def draw_square_type_on_position(self, position_to_draw: Position, viewer: Viewer):
+        viewer.viewer_draw(color=constants.COLOR_WITH_TYPE.get(self._square_type),
+                           rect=viewer.create_rectangle(
+                               left_arg=position_to_draw.co_x, top_arg=position_to_draw.co_y))
+
     def is_position_same(self, position_to_test: Position) -> bool:
         return self._position == position_to_test
 
-    def move_obstacle_if_possible(self, next_square: Square, viewer: Viewer):
-        # draw color type on the current position
-        viewer.viewer_draw(color=constants.COLOR_WITH_TYPE.get(self._square_type),
-                           rect=viewer.create_rectangle(left_arg=self._position.co_x,
-                                                        top_arg=self._position.co_y))
-
-        # update obstacle position and temp_type
-        self._position = next_square.position
-        self._square_type = next_square.square_type
-
-        # draw obstacle picture on the next_position
+    def move_obstacle_if_possible(self, square_to_move_on: Square, viewer: Viewer):
+        self.draw_square_type_on_position(position_to_draw=self._position, viewer=viewer)
+        self._position = square_to_move_on.position
         self.draw_image_on_current_position(viewer=viewer)
+        self._square_type = square_to_move_on.square_type
 
-        # increase pattern state when the move is done
         self.increment_pattern_state()
+
+    def get_movement_to_do(self) -> Movement:
+        return self._pattern.list_of_movements[
+            self._pattern_state % len(self._pattern.list_of_movements)]
 
     @property
     def position(self):
