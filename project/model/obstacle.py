@@ -1,11 +1,8 @@
 from project.constants import constants
 from project.display.viewer import Viewer
-from project.model.movement import Movement
 
-from project.model.pattern import Pattern
-from project.model.position import Position
-from project.model.square import Square
-from project.model.square_type import SquareType
+from project.model.position import Pattern, Movement
+from project.model.square import Square, Position, SquareType
 
 
 class Obstacle:

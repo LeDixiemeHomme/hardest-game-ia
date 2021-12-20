@@ -1,7 +1,7 @@
 from project.constants import constants
 
-from project.model.board import Board, Movement, Position, Obstacle
-from project.model.pattern import Pattern
+from project.model.board import Board, Position, Obstacle
+from project.model.position import Pattern, Movement
 from project.model.direction import Direction
 
 CROSS_PATTERN: Pattern = Pattern(list_of_movements=

@@ -1,7 +1,7 @@
 from copy import copy
+from typing import List
 
-from project.model.direction import Direction
-from project.model.movement import Movement
+from project.model.movement import Movement, Direction
 
 
 class Position:
@@ -54,3 +54,12 @@ class OutOfBoundBlockPositionException(Exception):
     def __init__(self, position: Position, width: int, height: int):
         super().__init__(
             f'Position {str(position)} is out of bound. Width = {width},Height = {height}')
+
+
+class Pattern:
+    def __init__(self, list_of_movements: List[Movement] = List):
+        self._list_of_movements: List[Movement] = list_of_movements
+
+    @property
+    def list_of_movements(self):
+        return self._list_of_movements

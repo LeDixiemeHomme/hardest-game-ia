@@ -1,17 +1,13 @@
 from typing import List
 
 from project.custom_exception.none_instantiate_singleton_viewer_exception import NoneInstantiateSingletonViewerException
-
-from project.constants import constants
 from project.custom_exception.wrong_display_size_exception import WrongDisplaySizeException
+from project.constants import constants
 from project.logger.logger import Logger
 from project.display.viewer import Viewer
 
-from project.model.movement import Movement
-from project.model.obstacle import Obstacle
+from project.model.obstacle import Obstacle, Movement, Square, SquareType
 from project.model.position import Position, OutOfBoundBlockPositionException
-from project.model.square import Square
-from project.model.square_type import SquareType
 
 logger: Logger = Logger(name=__name__, log_file_name="board_log")
 stdout_logger = logger.stdout_log
