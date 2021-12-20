@@ -3,6 +3,16 @@ import os
 from project.model.square_type import SquareType
 
 # width == x and height == y
+#
+#  + -- -- -- -- -- -- > x
+#  |
+#  |
+#  |
+#  |
+#  |
+#  |
+#  \/
+#  y
 
 SQUARE_SIZE: int = 1
 
@@ -15,6 +25,10 @@ MAIN_BOARD_HEIGHT = 3
 TEST_BOARD_WIDTH = 3
 
 TEST_BOARD_HEIGHT = 3
+
+SQUARE_BOARD_WIDTH = 10
+
+SQUARE_BOARD_HEIGHT = 10
 
 BASE_PATH: str = os.path.abspath("..") + '/'
 

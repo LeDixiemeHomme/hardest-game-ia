@@ -5,7 +5,7 @@ from project.model.square_type import SquareType
 class Square:
     def __init__(self, position: Position, square_type: SquareType):
         self._position: Position = position
-        self._square_type = square_type
+        self._square_type: SquareType = square_type
 
     @property
     def position(self):

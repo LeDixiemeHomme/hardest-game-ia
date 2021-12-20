@@ -1,64 +1,57 @@
 from project.constants import constants
 from project.display.viewer import Viewer
 
-from project.model.pattern import Pattern
-from project.model.position import Position
-from project.model.square import Square
-from project.model.square_type import SquareType
+from project.model.position import Pattern, Movement
+from project.model.square import Square, Position, SquareType
 
 
 class Obstacle:
     picture_path: str = constants.OBSTACLE_PICTURE_PATH
-    picture_size: str = constants.PICTURE_SIZE
+    picture_size: int = constants.PICTURE_SIZE
 
-    def __init__(self, position: Position, pattern: Pattern,
-                 picture_path: str = picture_path, picture_size: int = picture_size):
-        self._picture_path = picture_path
-        self._picture_size = picture_size
-        self._position = position
+    def __init__(self, position: Position,
+                 pattern: Pattern = Pattern(list_of_movements=[]),
+                 picture_path: str = picture_path,
+                 picture_size: int = picture_size,
+                 pattern_state: int = 0):
+        self._picture_path: str = picture_path
+        self._picture_size: int = picture_size
+        self._position: Position = position
         self._pattern: Pattern = pattern
-        self._pattern_state = 0
-        self._temp_type = SquareType.EMPTY
+        self._pattern_state: int = pattern_state
+        self._square_type: SquareType = SquareType.EMPTY
 
-    def draw(self, viewer: Viewer):
-        viewer.draw_image(picture_path=self._picture_path, picture_size=self._picture_size,
-                          co_x=self._position.co_x, co_y=self._position.co_y)
+    def draw_image_on_current_position(self, viewer: Viewer):
+        viewer.viewer_draw_image(picture_path=self._picture_path, picture_size=self._picture_size,
+                                 co_x=self._position.co_x, co_y=self._position.co_y)
 
-    def is_position_inside(self, position_to_test: Position) -> bool:
-        return self._position.co_x <= position_to_test.co_x <= self._position.co_x + constants.SQUARE_SIZE \
-               and self._position.co_y <= position_to_test.co_y <= self._position.co_y + constants.SQUARE_SIZE
+    def draw_square_type_on_position(self, position_to_draw: Position, viewer: Viewer):
+        viewer.viewer_draw(color=constants.COLOR_WITH_TYPE.get(self._square_type),
+                           rect=viewer.create_rectangle(
+                               left_arg=position_to_draw.co_x, top_arg=position_to_draw.co_y))
 
-    def move(self, next_square: Square, viewer: Viewer):
-        # draw color type on the current position
-        viewer.draw(color=constants.COLOR_WITH_TYPE.get(self._temp_type),
-                    rect=viewer.create_rectangle(left_arg=self._position.co_x,
-                                                 top_arg=self._position.co_y))
+    def is_position_same(self, position_to_test: Position) -> bool:
+        return self._position == position_to_test
 
-        # update obstacle position and temp_type
-        self._position = next_square.position
-        self._temp_type = next_square.square_type
+    def move_obstacle_if_possible(self, square_to_move_on: Square, viewer: Viewer):
+        self.draw_square_type_on_position(position_to_draw=self._position, viewer=viewer)
+        self._position = square_to_move_on.position
+        self.draw_image_on_current_position(viewer=viewer)
+        self._square_type = square_to_move_on.square_type
 
-        # draw obstacle picture on the next_position
-        self.draw(viewer=viewer)
-
-        # increase pattern state when the move is done
         self.increment_pattern_state()
+
+    def get_movement_to_do(self) -> Movement:
+        return self._pattern.list_of_movements[
+            self._pattern_state % len(self._pattern.list_of_movements)]
 
     @property
     def position(self):
         return self._position
 
-    @position.setter
-    def position(self, position: int):
-        self._position = position
-
     @property
-    def temp_type(self):
-        return self._temp_type
-
-    @temp_type.setter
-    def temp_type(self, temp_type: SquareType):
-        self._temp_type = temp_type
+    def square_type(self):
+        return self._square_type
 
     @property
     def pattern(self):

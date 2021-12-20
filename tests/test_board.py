@@ -1,15 +1,11 @@
-import unittest
 from typing import List
 
 import pytest
 
-from project.custom_exception.out_of_bound_block_position_exception import OutOfBoundBlockPositionException
 from project.custom_exception.wrong_display_size_exception import WrongDisplaySizeException
-from project.model.agent import Agent
-from project.model.board import Board, Position, SquareType, Obstacle
+from project.model.board import Board, Position, SquareType, Obstacle, Movement, OutOfBoundBlockPositionException
 from project.model.direction import Direction
-from project.model.movement import Movement
-from project.model.pattern import Pattern
+from project.model.position import Pattern
 
 
 class TestBoard:
@@ -24,14 +20,16 @@ class TestBoard:
     position_empty: Position = Position(2, 2)
     position_goal: Position = Position(5, 5)
 
-    agent: Agent = Agent(position=position_start)
+    coordinates: [[int, int]] = [[0, 0], [0, 4], [0, 10], [4, 0], [10, 0], [10, 10]]
+    positions_out: [Position] = []
+    for coordinate in coordinates:
+        positions_out.append(Position(co_x=coordinate[0], co_y=coordinate[1]))
 
-    position_out_under_under: Position = Position(0, 0)
-    position_out_under_in: Position = Position(0, 4)
-    position_out_under_over: Position = Position(0, 10)
-    position_out_in_under: Position = Position(4, 0)
-    position_out_over_under: Position = Position(10, 0)
-    position_out_over_over: Position = Position(10, 10)
+    position_after_movement = [(up_movement, Position(co_x=position_empty.co_x, co_y=position_empty.co_y - 1)),
+                               (down_movement, Position(co_x=position_empty.co_x, co_y=position_empty.co_y + 1)),
+                               (left_movement, Position(co_x=position_empty.co_x - 1, co_y=position_empty.co_y)),
+                               (right_movement, Position(co_x=position_empty.co_x + 1, co_y=position_empty.co_y))]
+
     position_next_to_start: Position = Position(1, 2)
     obstacle_next_to_start: Obstacle = Obstacle(position=position_next_to_start, pattern=Pattern(
         list_of_movements=[up_movement, down_movement]))
@@ -42,61 +40,37 @@ class TestBoard:
 
     board: Board = Board(height=board_height, width=board_width,
                          position_start=position_start, position_goal=position_goal,
-                         list_of_obstacle=[obstacle_next_to_start, obstacle_next_to_wall],
-                         agent=agent)
+                         list_of_obstacle=[obstacle_next_to_start, obstacle_next_to_wall])
+
     board.instantiate_singleton_viewer()
 
-    @pytest.mark.parametrize("excepted_square_type, tested_position", [(SquareType.START, position_start),
-                                                                       (SquareType.GOAL, position_goal),
-                                                                       (SquareType.EMPTY, position_empty)])
+    square_type_with_position = [
+        (SquareType.START, position_start), (SquareType.GOAL, position_goal), (SquareType.EMPTY, position_empty)]
+
+    @pytest.mark.parametrize("excepted_square_type, tested_position", square_type_with_position)
     def test_should_get_square_type_with_position_corresponding_square_type(self, excepted_square_type,
                                                                             tested_position):
-        assert excepted_square_type.value == self.board._get_square_type_from_board_by_position(tested_position).value
+        assert excepted_square_type.value == self.board.get_square_type_from_board_by_position(tested_position).value
 
-    @pytest.mark.parametrize("tested_position", [position_out_under_under,
-                                                 position_out_over_over,
-                                                 position_out_under_in])
+    @pytest.mark.parametrize("tested_position", positions_out)
     def test_should_get_square_type_with_position_raise_exception(self, tested_position):
         with pytest.raises(OutOfBoundBlockPositionException):
-            self.board._get_square_type_from_board_by_position(tested_position)
-
-    @pytest.mark.parametrize("tested_position", [position_out_under_under, position_out_under_in,
-                                                 position_out_under_over, position_out_in_under,
-                                                 position_out_over_under, position_out_over_over])
-    def test_should_get_square_type_with_position_corresponding_square_type(self, tested_position):
-        assert not self.board._is_position_inside_board_boundaries(position_to_test=tested_position)
-
-    def test_should_is_position_inside_board_boundaries_with_position_start_return_true(self):
-        assert self.board._is_position_inside_board_boundaries(position_to_test=self.position_start)
+            self.board.get_square_type_from_board_by_position(tested_position)
 
     def test_should_get_index_of_list_of_square_by_position_with_position_start_return_0(self):
         expected_index: int = 0
         assert expected_index == self.board._get_index_of_list_of_square_by_position(position=self.position_start)
 
-    def test_should_get_index_of_list_of_square_by_position_with_position_start_raise_exception(self):
+    @pytest.mark.parametrize("tested_position", positions_out)
+    def test_should_get_index_of_list_of_square_by_position_with_position_start_raise_exception(self, tested_position):
         with pytest.raises(OutOfBoundBlockPositionException):
-            self.board._get_index_of_list_of_square_by_position(position=self.position_out_over_over)
-
-    def test_should_get_position_after_movement_with_position_out_raise_exception(self):
-        with pytest.raises(OutOfBoundBlockPositionException):
-            self.board._get_position_after_movement(current_position=self.position_out_over_over,
-                                                    current_movement=self.right_movement)
-
-    @pytest.mark.parametrize("movement, position_expected",
-                             [(up_movement, Position(co_x=position_empty.co_x, co_y=position_empty.co_y - 1)),
-                              (down_movement, Position(co_x=position_empty.co_x, co_y=position_empty.co_y + 1)),
-                              (left_movement, Position(co_x=position_empty.co_x - 1, co_y=position_empty.co_y)),
-                              (right_movement, Position(co_x=position_empty.co_x + 1, co_y=position_empty.co_y))])
-    def test_should_get_position_after_movement(self, movement, position_expected):
-        result_position: Position = self.board._get_position_after_movement(current_position=self.position_empty,
-                                                                            current_movement=movement)
-        assert position_expected == result_position
-
+            self.board._get_index_of_list_of_square_by_position(position=tested_position)
+            
     def test_should_move_obstacles_not_erase_start_position(self):
         expected_log: List[SquareType] = [SquareType.START, SquareType.OBSTACLE, SquareType.START]
         square_type_log: List[SquareType] = []
         for i in range(3):
-            square_type_log.append(self.board._get_square_type_from_board_by_position(self.position_start))
+            square_type_log.append(self.board.get_square_type_from_board_by_position(self.position_start))
             self.board.move_obstacles()
         assert expected_log == square_type_log
 
@@ -112,13 +86,9 @@ class TestBoard:
     def test_board_with_big_width_raise_wrong_display_size_exception(self):
         with pytest.raises(WrongDisplaySizeException):
             Board(width=21, height=10, position_start=Position(1, 1), position_goal=Position(2, 2),
-                  list_of_obstacle=[], agent=Agent(position=Position(1, 2)))
+                  list_of_obstacle=[])
 
     def test_board_with_big_height_raise_wrong_display_size_exception(self):
         with pytest.raises(WrongDisplaySizeException):
             Board(width=10, height=21, position_start=Position(1, 1), position_goal=Position(2, 2),
-                  list_of_obstacle=[], agent=Agent(position=Position(1, 2)))
-
-
-if __name__ == '__main__':
-    unittest.main()
+                  list_of_obstacle=[])
