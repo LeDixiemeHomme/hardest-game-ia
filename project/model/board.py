@@ -43,6 +43,30 @@ class Board:
         for obstacle in list_of_obstacle:
             obstacle.position.check_boundaries(width=width, height=height)
 
+    def _generate_list_of_square(self, width: int, height: int) -> List[Square]:
+        self._check_board_size(width=width, height=height)
+        list_of_square: List[Square] = []
+        # dans range 1, size + 1 pour que position soit pas de (0 to 9) mais de (1 to 10)
+        for x in range(1, width + 1):
+            for y in range(1, height + 1):
+                list_of_square.append(Square(position=Position(co_x=x, co_y=y), square_type=SquareType.EMPTY))
+        return list_of_square
+
+    def _fill_list_of_square_with_init_square(self, width: int, height: int, list_of_obstacle: List[Obstacle],
+                                              position_start: Position, position_goal: Position) -> List[Square]:
+        filled_list_of_square: List[Square] = self._generate_list_of_square(width=width, height=height)
+        filled_list_of_square[self._get_index_of_list_of_square_by_position(position_start)] = \
+            Square(position=position_start, square_type=SquareType.START)
+
+        filled_list_of_square[self._get_index_of_list_of_square_by_position(position_goal)] = \
+            Square(position=position_goal, square_type=SquareType.GOAL)
+
+        for obstacle in list_of_obstacle:
+            obstacle_position = obstacle.position
+            filled_list_of_square[self._get_index_of_list_of_square_by_position(position=obstacle_position)] = \
+                Square(position=obstacle_position, square_type=SquareType.OBSTACLE)
+        return filled_list_of_square
+
     def _init_list_of_square(self, width: int, height: int,
                              position_start: Position, position_goal: Position,
                              list_of_obstacle: List[Obstacle]) -> List[Square]:
@@ -56,24 +80,9 @@ class Board:
         self._position_goal = position_goal
         self._list_of_obstacle: List[Obstacle] = list_of_obstacle
 
-        list_of_square = []
-
-        # dans range 1, size + 1 pour que position(0, 9) -> position(1, 10)
-        for x in range(1, width + 1):
-            for y in range(1, height + 1):
-                list_of_square.append(Square(position=Position(co_x=x, co_y=y), square_type=SquareType.EMPTY))
-
-        list_of_square[self._get_index_of_list_of_square_by_position(position_start)] = \
-            Square(position=position_start, square_type=SquareType.START)
-
-        list_of_square[self._get_index_of_list_of_square_by_position(position_goal)] = \
-            Square(position=position_goal, square_type=SquareType.GOAL)
-
-        for obstacle in self._list_of_obstacle:
-            obstacle_position = obstacle.position
-            list_of_square[self._get_index_of_list_of_square_by_position(position=obstacle_position)] = \
-                Square(position=obstacle_position, square_type=SquareType.OBSTACLE)
-
+        list_of_square: List[Square] = self._fill_list_of_square_with_init_square(
+            width=width, height=height, list_of_obstacle=list_of_obstacle,
+            position_start=position_start, position_goal=position_goal)
         return list_of_square
 
     def _get_index_of_list_of_square_by_position(self, position: Position) -> int:
@@ -87,6 +96,7 @@ class Board:
     def move_obstacles(self):
         self.viewer.set_tick(time_to_stop=6)
         for obstacle in self._list_of_obstacle:
+            self.update_list_of_square(position=obstacle.position, square_type=obstacle.square_type)
             movement_to_apply: Movement = obstacle.get_movement_to_do()
             try:
                 position_after_movement: Position = \
@@ -96,9 +106,7 @@ class Board:
             except OutOfBoundBlockPositionException:
                 position_after_movement = obstacle.position
                 next_square_type = obstacle.square_type
-
             self.update_list_of_square(position=position_after_movement, square_type=SquareType.OBSTACLE)
-            self.update_list_of_square(position=obstacle.position, square_type=obstacle.square_type)
 
             obstacle.move_obstacle_if_possible(square_to_move_on=Square(
                 position=position_after_movement, square_type=next_square_type), viewer=self.viewer)
