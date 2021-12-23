@@ -1,8 +1,11 @@
+from copy import copy
+
 from project.constants import constants
 from project.display.viewer import Viewer
 
-from project.model.position import Pattern, Movement
+from project.model.position import Pattern, Movement, OutOfBoundBlockPositionException
 from project.model.square import Square, Position, SquareType
+from project.model.square_list import SquareList
 
 
 class Obstacle:
@@ -33,7 +36,29 @@ class Obstacle:
     def is_position_same(self, position_to_test: Position) -> bool:
         return self._position == position_to_test
 
-    def move_obstacle_if_possible(self, square_to_move_on: Square, viewer: Viewer):
+    def move_obstacle_if_possible(self, square_list: SquareList, viewer: Viewer) -> SquareList:
+        copy_square_list: SquareList = copy(square_list)
+        movement_to_apply: Movement = self.get_movement_to_do()
+        try:
+            position_after_movement: Position = \
+                self.position.apply_movement(movement=movement_to_apply)
+            next_square_type: SquareType = copy_square_list.get_square_type_from_board_by_position(
+                position=position_after_movement)
+        except OutOfBoundBlockPositionException:
+            position_after_movement = self.position
+            next_square_type = self.square_type
+
+        copy_square_list.put_square_in_list_of_square(Square(position=self.position,
+                                                             square_type=self.square_type))
+        copy_square_list.put_square_in_list_of_square(Square(position=position_after_movement,
+                                                             square_type=SquareType.OBSTACLE))
+
+        self.move(square_to_move_on=Square(
+            position=position_after_movement, square_type=next_square_type), viewer=viewer)
+
+        return copy_square_list
+
+    def move(self, square_to_move_on: Square, viewer: Viewer):
         self.draw_square_type_on_position(position_to_draw=self._position, viewer=viewer)
         self._position = square_to_move_on.position
         self.draw_image_on_current_position(viewer=viewer)
