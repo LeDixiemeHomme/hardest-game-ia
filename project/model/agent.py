@@ -14,19 +14,20 @@ class Agent:
     picture_path: str = constants.AGENT_PICTURE_PATH
     picture_size: int = constants.PICTURE_SIZE
 
-    def __init__(self, board: Board, position: Position,
+    def __init__(self, board: Board,
                  picture_path: str = picture_path,
                  picture_size: int = picture_size,
                  learning_rate: float = 1,
                  discount_factor: float = 0.5):
         self._board: Board = board
-        self._position: Position = position
+        self._position: Position = board.position_start
         self._square_type: SquareType = SquareType.START
         self._picture_path: str = picture_path
         self._picture_size: int = picture_size
         self._learning_rate: float = learning_rate
         self._discount_factor: float = discount_factor
         self.__qtable = {}
+        self._score = 0
 
     def is_position_on_goal_square(self):
         return self._position == self._board.position_goal
@@ -54,9 +55,9 @@ class Agent:
         except OutOfBoundBlockPositionException:
             next_position: Position = self._position
             next_square_type: SquareType = self._square_type
-        self.move(square_to_move_on=Square(position=next_position, square_type=next_square_type))
+        self._move(square_to_move_on=Square(position=next_position, square_type=next_square_type))
 
-    def move(self, square_to_move_on: Square):
+    def _move(self, square_to_move_on: Square):
         self.draw_square_type_on_position(position_to_draw=self._position)
         self._position = square_to_move_on.position
         self.draw_image_on_current_position()
@@ -77,3 +78,7 @@ class Agent:
     @property
     def discount_factor(self):
         return self._discount_factor
+
+    @property
+    def score(self):
+        return self._score

@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     board.instantiate_singleton_viewer()
 
-    agent: Agent = Agent(board=board, position=board.position_start)
+    agent: Agent = Agent(board=board)
 
     stdout_logger.debug("Start drawing board ...")
     agent.board.draw_board()
@@ -36,6 +36,11 @@ if __name__ == '__main__':
 
         agent.board.move_obstacles()
         agent.draw_image_on_current_position()
+
+
+
+        # action = agent.best_action()
+        # reward = env.apply(agent, action)
 
         if agent.is_position_on_goal_square():
             win = True

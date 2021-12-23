@@ -8,6 +8,8 @@ from project.model.board import Board, Position
 from project.model.direction import Direction
 from project.model.movement import Movement
 from project.model.obstacle import Obstacle
+from project.model.square import Square
+from project.model.square_type import SquareType
 
 
 class TestAgent:
@@ -40,30 +42,36 @@ class TestAgent:
     board.instantiate_singleton_viewer()
 
     def test_should_is_position_on_goal_square_with_agent_on_position_goal_return_true(self):
-        agent: Agent = Agent(board=self.board, position=self.position_goal)
+        agent: Agent = Agent(board=self.board)
+        agent._move(square_to_move_on=Square(position=self.position_goal, square_type=SquareType.GOAL))
         assert agent.is_position_on_goal_square()
 
     def test_should_is_position_on_goal_square_with_agent_on_position_goal_return_false(self):
-        agent: Agent = Agent(board=self.board, position=self.position_start)
+        agent: Agent = Agent(board=self.board)
+        agent._move(square_to_move_on=Square(position=self.position_start, square_type=SquareType.START))
         assert not agent.is_position_on_goal_square()
 
     def test_should_is_position_on_obstacle_square_with_agent_on_position_obstacle_return_true(self):
-        agent: Agent = Agent(board=self.board, position=self.position_obstacle)
+        agent: Agent = Agent(board=self.board)
+        agent._move(square_to_move_on=Square(position=self.position_obstacle, square_type=SquareType.OBSTACLE))
         assert agent.is_position_on_obstacle_square()
 
     def test_should_is_position_on_obstacle_square_with_agent_on_position_obstacle_return_false(self):
-        agent: Agent = Agent(board=self.board, position=self.position_start)
+        agent: Agent = Agent(board=self.board)
+        agent._move(square_to_move_on=Square(position=self.position_start, square_type=SquareType.START))
         assert not agent.is_position_on_obstacle_square()
 
     @pytest.mark.parametrize("movements", movements)
     def test_should_move_agent_if_possible_updates_agent_position(self, movements):
-        agent: Agent = Agent(board=self.board, position=self.centered_position)
+        agent: Agent = Agent(board=self.board)
+        agent._move(square_to_move_on=Square(position=self.centered_position, square_type=SquareType.EMPTY))
         agent.move_agent_if_possible(requested_movement=movements)
         assert agent.position == self.centered_position.apply_movement(movement=movements)
 
     @pytest.mark.parametrize("movements_to_times_five, wall_positions", movements_to_times_five_wall_positions)
     def test_should_move_agent_if_possible_stop_on_wall(self, movements_to_times_five, wall_positions):
-        agent: Agent = Agent(board=self.board, position=self.centered_position)
+        agent: Agent = Agent(board=self.board)
+        agent._move(square_to_move_on=Square(position=self.centered_position, square_type=SquareType.EMPTY))
         for _ in range(5):
             agent.move_agent_if_possible(requested_movement=movements_to_times_five)
         print(agent.position, wall_positions)
