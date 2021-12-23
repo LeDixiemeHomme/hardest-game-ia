@@ -1,7 +1,10 @@
 from project.constants import constants
 from project.logger.logger import Logger
-from project.model.board import Board, Position, Square, SquareType, \
-    Movement, OutOfBoundBlockPositionException
+from project.model.board import Board, Position
+from project.model.movement import Movement
+from project.model.position import OutOfBoundBlockPositionException
+from project.model.square import Square
+from project.model.square_type import SquareType
 
 logger: Logger = Logger(name=__name__, log_file_name="agent_log")
 stdout_logger = logger.stdout_log
@@ -46,7 +49,8 @@ class Agent:
     def move_agent_if_possible(self, requested_movement: Movement):
         try:
             next_position: Position = self._position.apply_movement(movement=requested_movement)
-            next_square_type: SquareType = self._board.get_square_type_from_board_by_position(position=next_position)
+            next_square_type: SquareType = \
+                self._board.square_list.get_square_type_from_board_by_position(position=next_position)
         except OutOfBoundBlockPositionException:
             next_position: Position = self._position
             next_square_type: SquareType = self._square_type
