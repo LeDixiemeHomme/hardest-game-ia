@@ -6,8 +6,10 @@ from project.constants import constants
 from project.logger.logger import Logger
 from project.display.viewer import Viewer
 
-from project.model.obstacle import Obstacle, Movement, Square, SquareType
-from project.model.position import Position, OutOfBoundBlockPositionException
+from project.model.obstacle import Obstacle, Position
+from project.model.square import Square
+from project.model.square_list import SquareList
+from project.model.square_type import SquareType
 
 logger: Logger = Logger(name=__name__, log_file_name="board_log")
 stdout_logger = logger.stdout_log
@@ -18,9 +20,9 @@ class Board:
                  position_start: Position, position_goal: Position,
                  list_of_obstacle: List[Obstacle]):
         self._viewer = None
-        self._list_of_square: List[Square] = self._init_list_of_square(
-            width=width, height=height, position_start=position_start,
-            position_goal=position_goal, list_of_obstacle=list_of_obstacle)
+        self._square_list: SquareList = self._init_square_list(
+            width=width, height=height, list_of_obstacle=list_of_obstacle,
+            position_start=position_start, position_goal=position_goal)
 
     def instantiate_singleton_viewer(self):
         stdout_logger.debug("Instantiate board singleton viewer ...")
@@ -39,33 +41,8 @@ class Board:
         for obstacle in list_of_obstacle:
             obstacle.position.check_boundaries(width=width, height=height)
 
-    def _generate_list_of_square(self, width: int, height: int) -> List[Square]:
-        self._check_board_size(width=width, height=height)
-        list_of_square: List[Square] = []
-        # dans range 1, size + 1 pour que position soit pas de (0 to 9) mais de (1 to 10)
-        for x in range(1, width + 1):
-            for y in range(1, height + 1):
-                list_of_square.append(Square(position=Position(co_x=x, co_y=y), square_type=SquareType.EMPTY))
-        return list_of_square
-
-    def _fill_list_of_square_with_init_square(self, width: int, height: int, list_of_obstacle: List[Obstacle],
-                                              position_start: Position, position_goal: Position) -> List[Square]:
-        filled_list_of_square: List[Square] = self._generate_list_of_square(width=width, height=height)
-        filled_list_of_square[self._get_index_of_list_of_square_by_position(position_start)] = \
-            Square(position=position_start, square_type=SquareType.START)
-
-        filled_list_of_square[self._get_index_of_list_of_square_by_position(position_goal)] = \
-            Square(position=position_goal, square_type=SquareType.GOAL)
-
-        for obstacle in list_of_obstacle:
-            obstacle_position = obstacle.position
-            filled_list_of_square[self._get_index_of_list_of_square_by_position(position=obstacle_position)] = \
-                Square(position=obstacle_position, square_type=SquareType.OBSTACLE)
-        return filled_list_of_square
-
-    def _init_list_of_square(self, width: int, height: int,
-                             position_start: Position, position_goal: Position,
-                             list_of_obstacle: List[Obstacle]) -> List[Square]:
+    def _init_square_list(self, width: int, height: int, list_of_obstacle: List[Obstacle],
+                          position_start: Position, position_goal: Position) -> SquareList:
         self._check_board_size(width=width, height=height)
         self._width = width
         self._height = height
@@ -76,50 +53,31 @@ class Board:
         self._position_goal = position_goal
         self._list_of_obstacle: List[Obstacle] = list_of_obstacle
 
-        list_of_square: List[Square] = self._fill_list_of_square_with_init_square(
-            width=width, height=height, list_of_obstacle=list_of_obstacle,
-            position_start=position_start, position_goal=position_goal)
-        return list_of_square
+        square_list: SquareList = SquareList(width=width, height=height,
+                                             position_start=position_start, position_goal=position_goal)
 
-    def _get_index_of_list_of_square_by_position(self, position: Position) -> int:
-        position.check_boundaries(width=self._width, height=self._height)
-        return self._height * position.co_x - (self._height - position.co_y) - 1
-
-    def get_square_type_from_board_by_position(self, position: Position) -> SquareType:
-        return self._list_of_square[
-            self._get_index_of_list_of_square_by_position(position)].square_type
+        for obstacle in list_of_obstacle:
+            obstacle_position = obstacle.position
+            square_list.put_square_in_list_of_square(square_to_put=Square(
+                position=obstacle_position, square_type=SquareType.OBSTACLE))
+        return square_list
 
     def move_obstacles(self):
         self.viewer.set_tick(time_to_stop=6)
         for obstacle in self._list_of_obstacle:
-            self.update_list_of_square(position=obstacle.position, square_type=obstacle.square_type)
-            movement_to_apply: Movement = obstacle.get_movement_to_do()
-            try:
-                position_after_movement: Position = \
-                    obstacle.position.apply_movement(movement=movement_to_apply)
-                next_square_type: SquareType = self.get_square_type_from_board_by_position(
-                    position=position_after_movement)
-            except OutOfBoundBlockPositionException:
-                position_after_movement = obstacle.position
-                next_square_type = obstacle.square_type
-            self.update_list_of_square(position=position_after_movement, square_type=SquareType.OBSTACLE)
-
-            obstacle.move_obstacle_if_possible(square_to_move_on=Square(
-                position=position_after_movement, square_type=next_square_type), viewer=self.viewer)
+            new_square_list: SquareList = obstacle.move_obstacle_if_possible(square_list=self._square_list,
+                                                                             viewer=self.viewer)
+            self._square_list = new_square_list
 
     def draw_board(self):
-        for square in self._list_of_square:
+        for square in self._square_list.list_of_square:
             rect = self.viewer.create_rectangle(
                 left_arg=square.position.co_x, top_arg=square.position.co_y)
             self.viewer.viewer_draw(color=constants.COLOR_WITH_TYPE.get(square.square_type), rect=rect)
 
     @property
-    def list_of_square(self):
-        return self._list_of_square
-
-    def update_list_of_square(self, position: Position, square_type: SquareType):
-        self._list_of_square[self._get_index_of_list_of_square_by_position(position=position)] = \
-            Square(position=position, square_type=square_type)
+    def square_list(self):
+        return self._square_list
 
     @property
     def list_of_obstacle(self):

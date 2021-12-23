@@ -42,7 +42,9 @@ OBSTACLE_CROSS_PATTERN_MAIN_3: Obstacle = Obstacle(position=Position(co_x=9, co_
 
 OBSTACLE_CROSS_PATTERN_MAIN_4: Obstacle = Obstacle(position=Position(co_x=11, co_y=3), pattern=CROSS_PATTERN)
 
-OBSTACLE_CROSS_PATTERN_MAIN_5: Obstacle = Obstacle(position=Position(co_x=13, co_y=2), pattern=CROSS_PATTERN)
+OBSTACLE_CROSS_PATTERN_MAIN_5: Obstacle = Obstacle(position=Position(co_x=13, co_y=1), pattern=CROSS_PATTERN)
+
+OBSTACLE_CROSS_PATTERN_MAIN_6: Obstacle = Obstacle(position=Position(co_x=15, co_y=3), pattern=CROSS_PATTERN)
 
 OBSTACLE_SQUARE_CROSS_PATTERN_1: Obstacle = Obstacle(position=Position(co_x=4, co_y=4), pattern=CROSS_PATTERN)
 
@@ -91,7 +93,8 @@ MAIN_BOARD: Board = Board(width=constants.MAIN_BOARD_WIDTH, height=constants.MAI
                               OBSTACLE_CROSS_PATTERN_MAIN_2,
                               OBSTACLE_CROSS_PATTERN_MAIN_3,
                               OBSTACLE_CROSS_PATTERN_MAIN_4,
-                              OBSTACLE_CROSS_PATTERN_MAIN_5
+                              OBSTACLE_CROSS_PATTERN_MAIN_5,
+                              OBSTACLE_CROSS_PATTERN_MAIN_6
                           ])
 
 TEST_BOARD: Board = Board(width=constants.TEST_BOARD_WIDTH, height=constants.TEST_BOARD_HEIGHT,
