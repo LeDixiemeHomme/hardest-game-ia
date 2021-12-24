@@ -1,5 +1,4 @@
 from typing import List
-from collections import namedtuple
 
 import pytest
 
@@ -66,7 +65,7 @@ class TestAgent:
         agent: Agent = Agent(board=self.board)
         agent._move(square_to_move_on=Square(position=self.centered_position, square_type=SquareType.EMPTY))
         agent.move_agent_if_possible(requested_movement=movements)
-        assert agent.position == self.centered_position.apply_movement(movement=movements)
+        assert agent._square.position == self.centered_position.apply_movement(movement=movements)
 
     @pytest.mark.parametrize("movements_to_times_five, wall_positions", movements_to_times_five_wall_positions)
     def test_should_move_agent_if_possible_stop_on_wall(self, movements_to_times_five, wall_positions):
@@ -74,5 +73,4 @@ class TestAgent:
         agent._move(square_to_move_on=Square(position=self.centered_position, square_type=SquareType.EMPTY))
         for _ in range(5):
             agent.move_agent_if_possible(requested_movement=movements_to_times_five)
-        print(agent.position, wall_positions)
-        assert agent.position == wall_positions
+        assert agent._square.position == wall_positions
