@@ -26,17 +26,17 @@ class SquareList:
         self.put_square_in_list_of_square(square_to_put=Square(
             position=position_goal, square_type=SquareType.GOAL))
 
-    def _get_index_of_list_of_square_by_position(self, position: Position) -> int:
+    def get_index_of_list_of_square_by_position(self, position: Position) -> int:
         position.check_boundaries(width=self._width, height=self._height)
         return self._height * position.co_x - (self._height - position.co_y) - 1
 
     def get_square_type_from_board_by_position(self, position: Position) -> SquareType:
         return self._list_of_square[
-            self._get_index_of_list_of_square_by_position(position)].square_type
+            self.get_index_of_list_of_square_by_position(position)].square_type
 
     def put_square_in_list_of_square(self, square_to_put: Square):
         self.list_of_square[
-            self._get_index_of_list_of_square_by_position(
+            self.get_index_of_list_of_square_by_position(
                 position=square_to_put.position)] = square_to_put
 
     @property
