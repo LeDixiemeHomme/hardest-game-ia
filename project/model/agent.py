@@ -17,6 +17,7 @@ class Agent:
     picture_size: int = constants.PICTURE_SIZE
 
     def __init__(self, board: Board,
+                 qtable: {} = None,
                  picture_path: str = picture_path,
                  picture_size: int = picture_size,
                  learning_rate: float = 1,
@@ -27,7 +28,10 @@ class Agent:
         self._picture_size: int = picture_size
         self._learning_rate: float = learning_rate
         self._discount_factor: float = discount_factor
-        self._qtable = self._fill_qtable(square_list=board.square_list)
+        if qtable is None:
+            self._qtable = self._fill_qtable(square_list=board.square_list)
+        else:
+            self._qtable = qtable
         self._score = 0
 
     def _fill_qtable(self, square_list: SquareList) -> {}:
@@ -46,10 +50,8 @@ class Agent:
         #                     [reward + discount_factor * max(Q(state)) - Q(s, a)]
 
         max_q: int = max(self._qtable[tuple_position].values())
-        print("before self._qtable[tuple_position][action] = ", self._qtable[tuple_position][action])
         self._qtable[tuple_position][action] += self._learning_rate * (
                 reward + self._discount_factor * max_q - self._qtable[tuple_position][action])
-        print("after self._qtable[tuple_position][action] = ", self._qtable[tuple_position][action])
         self._score += reward
 
     def best_action(self) -> Direction:
@@ -58,7 +60,6 @@ class Agent:
         for direction in self._qtable[tuple_position]:
             if self._qtable[tuple_position][direction] > self._qtable[tuple_position][best_direction]:
                 best_direction = direction
-        print(best_direction)
         return best_direction
 
     def is_position_on_goal_square(self):
