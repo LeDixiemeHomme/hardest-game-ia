@@ -53,3 +53,12 @@ COLOR_WITH_TYPE: {SquareType: COLOR} = {
     SquareType.OBSTACLE: COLOR.get("WHITE"),
     SquareType.WALL: COLOR.get("BLACK")
 }
+
+REWARD_WITH_TYPE: {SquareType: int} = {
+    SquareType.EMPTY: -1,
+    SquareType.START: -20,
+    SquareType.WALL: -20,
+    SquareType.OBSTACLE: - 100,
+    SquareType.GOAL: 100
+}
+
