@@ -55,10 +55,10 @@ COLOR_WITH_TYPE: {SquareType: COLOR} = {
 }
 
 REWARD_WITH_TYPE: {SquareType: int} = {
-    SquareType.EMPTY: -1,
+    SquareType.EMPTY: -10,
     SquareType.START: -20,
-    SquareType.WALL: -20,
+    SquareType.WALL: -50,
     SquareType.OBSTACLE: - 100,
-    SquareType.GOAL: 100
+    SquareType.GOAL: 1000
 }
 
