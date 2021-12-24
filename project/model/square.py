@@ -18,3 +18,8 @@ class Square:
     def __str__(self) -> str:
         string: str = "Square : { " + str(self._position) + "; " + str(self._square_type) + " }"
         return string
+
+    def __eq__(self, tested):
+        if isinstance(tested, Square):
+            return self._position == tested.position and self._square_type == tested.square_type
+        return False
