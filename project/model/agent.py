@@ -30,6 +30,37 @@ class Agent:
         self._qtable = self._fill_qtable(square_list=board.square_list)
         self._score = 0
 
+    def _fill_qtable(self, square_list: SquareList) -> {}:
+        qtable = {}
+        for square in square_list.list_of_square:
+            tuple_position = (square.position.co_x, square.position.co_y)
+            qtable[tuple_position] = {}
+            for direction in Direction.__members__.values():
+                qtable[tuple_position][direction] = 0.0
+        return qtable
+
+    def update(self, square: Square, action: Direction, reward: int):
+        tuple_position = (square.position.co_x, square.position.co_y)
+
+        # Q(s, a) <- Q(s, a) + learning_rate *
+        #                     [reward + discount_factor * max(Q(state)) - Q(s, a)]
+
+        max_q: int = max(self._qtable[tuple_position].values())
+        print("before self._qtable[tuple_position][action] = ", self._qtable[tuple_position][action])
+        self._qtable[tuple_position][action] += self._learning_rate * (
+                reward + self._discount_factor * max_q - self._qtable[tuple_position][action])
+        print("after self._qtable[tuple_position][action] = ", self._qtable[tuple_position][action])
+        self._score += reward
+
+    def best_action(self) -> Direction:
+        best_direction: Direction = Direction.STAY
+        tuple_position = (self._square.position.co_x, self._square.position.co_y)
+        for direction in self._qtable[tuple_position]:
+            if self._qtable[tuple_position][direction] > self._qtable[tuple_position][best_direction]:
+                best_direction = direction
+        print(best_direction)
+        return best_direction
+
     def is_position_on_goal_square(self):
         return self._square.position == self._board.position_goal
 
@@ -63,9 +94,23 @@ class Agent:
         self._square = square_to_move_on
         self.draw_image_on_current_position()
 
-    @property
-    def position(self):
-        return self._position
+    def _update_then_move(self, square_to_move_on: Square, action: Direction, reward: int):
+        self.update(square=self._square, action=action, reward=reward)
+        self._move(square_to_move_on=square_to_move_on)
+
+    def move_agent_with_qtable_update(self, requested_movement: Movement) -> int:
+        try:
+            next_position: Position = self._square.position.apply_movement(movement=requested_movement)
+            next_square_type: SquareType = \
+                self._board.square_list.get_square_type_from_board_by_position(position=next_position)
+            reward = constants.REWARD_WITH_TYPE.get(next_square_type)
+        except OutOfBoundBlockPositionException:
+            next_position: Position = self._square.position
+            next_square_type: SquareType = self._square.square_type
+            reward = constants.REWARD_WITH_TYPE.get(SquareType.WALL)
+        self._update_then_move(square_to_move_on=Square(position=next_position, square_type=next_square_type),
+                               action=requested_movement.direction, reward=reward)
+        return reward
 
     @property
     def board(self):
