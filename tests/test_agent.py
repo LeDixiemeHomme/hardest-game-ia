@@ -64,7 +64,7 @@ class TestAgent:
     def test_should_move_agent_if_possible_updates_agent_position(self, movements):
         agent: Agent = Agent(board=self.board)
         agent._move(square_to_move_on=Square(position=self.centered_position, square_type=SquareType.EMPTY))
-        agent.move_agent_if_possible(requested_movement=movements)
+        agent.move_agent_if_possible(requested_movement=movements, should_qtable_be_updated=False)
         assert agent._square.position == self.centered_position.apply_movement(movement=movements)
 
     @pytest.mark.parametrize("movements_to_times_five, wall_positions", movements_to_times_five_wall_positions)
@@ -72,5 +72,5 @@ class TestAgent:
         agent: Agent = Agent(board=self.board)
         agent._move(square_to_move_on=Square(position=self.centered_position, square_type=SquareType.EMPTY))
         for _ in range(5):
-            agent.move_agent_if_possible(requested_movement=movements_to_times_five)
+            agent.move_agent_if_possible(requested_movement=movements_to_times_five, should_qtable_be_updated=False)
         assert agent._square.position == wall_positions
