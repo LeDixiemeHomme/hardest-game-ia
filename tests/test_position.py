@@ -63,3 +63,12 @@ class TestPosition:
             tested_position_co_x=position.co_x,
             tested_position_co_y=position.co_y)
         assert number_to_test == number
+
+    def test_should_number_of_square_between_self_and_tested_position_works_reciprocally(self):
+        distance_one = self.position_3_3.number_of_square_between_self_and_tested_position(
+            tested_position_co_x=self.position_10_10.co_x,
+            tested_position_co_y=self.position_10_10.co_y)
+        distance_two = self.position_10_10.number_of_square_between_self_and_tested_position(
+            tested_position_co_x=self.position_3_3.co_x,
+            tested_position_co_y=self.position_3_3.co_y)
+        assert distance_one == distance_two
