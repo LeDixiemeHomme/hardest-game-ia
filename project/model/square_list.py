@@ -1,6 +1,7 @@
 from typing import List
 
 from project.model.obstacle import Square, SquareType, Position
+from project.model.position import OutOfBoundBlockPositionException
 
 
 class SquareList:
@@ -38,6 +39,17 @@ class SquareList:
         self.list_of_square[
             self.get_index_of_list_of_square_by_position(
                 position=square_to_put.position)] = square_to_put
+
+    def get_surrounding_squares(self, position: Position) -> List[Square]:
+        positions: List[Position] = position.get_surrounding_positions()
+        squares: List[Square] = []
+        for position in positions:
+            try:
+                square_type: SquareType = self.get_square_type_from_board_by_position(position=position)
+            except OutOfBoundBlockPositionException:
+                square_type: SquareType = SquareType.WALL
+            squares.append(Square(position=position, square_type=square_type))
+        return squares
 
     @property
     def list_of_square(self):
