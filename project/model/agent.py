@@ -65,6 +65,10 @@ class Agent:
                     best_direction = direction
         return best_direction
 
+    def is_next_position_closer_from_goal_than_self_position(self, next_position: Position) -> bool:
+        return self._board.distance_from_position_goal(position_to_test=self._square.position) \
+               > self._board.distance_from_position_goal(position_to_test=next_position)
+
     def is_position_on_goal_square(self):
         return self._square.position == self._board.position_goal
 

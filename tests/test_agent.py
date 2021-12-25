@@ -32,6 +32,13 @@ class TestAgent:
     centered_position: Position = Position(co_x=3, co_y=3)
     position_obstacle: Position = Position(1, 5)
 
+    positions_with_is_closer_from_goal: [Position, bool] = [[centered_position, True],
+                                                            [Position(co_x=0, co_y=0), False],
+                                                            [Position(co_x=-1, co_y=-1), False],
+                                                            [position_goal, True],
+                                                            [position_start, False],
+                                                            ]
+
     obstacle: Obstacle = Obstacle(position=position_obstacle)
 
     board: Board = Board(height=board_height, width=board_width,
@@ -74,3 +81,8 @@ class TestAgent:
         for _ in range(5):
             agent.move_agent_if_possible(requested_movement=movements_to_times_five, should_qtable_be_updated=False)
         assert agent._square.position == wall_positions
+
+    @pytest.mark.parametrize("positions, is_closer", positions_with_is_closer_from_goal)
+    def test_is_next_position_closer_from_goal_than_self_position(self, positions, is_closer):
+        agent: Agent = Agent(board=self.board)
+        assert agent.is_next_position_closer_from_goal_than_self_position(next_position=positions) is is_closer
