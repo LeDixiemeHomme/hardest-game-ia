@@ -28,6 +28,10 @@ class Board:
         stdout_logger.debug("Instantiate board singleton viewer ...")
         self._viewer: Viewer = Viewer(width=self._width, height=self._height)
 
+    def distance_from_position_goal(self, position_to_test: Position) -> int:
+        return self._position_goal.number_of_square_between_self_and_tested_position(
+            tested_position_co_x=position_to_test.co_x, tested_position_co_y=position_to_test.co_y)
+
     @staticmethod
     def _check_board_size(width: int, height: int):
         if width > 20 or height > 20:
