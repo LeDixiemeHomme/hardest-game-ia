@@ -13,7 +13,7 @@ class SquareList:
         self._fill_list_of_square_with_init_square(position_start=position_start,
                                                    position_goal=position_goal)
 
-    def _generate_list_of_square(self):
+    def _generate_list_of_square(self) -> List[Square]:
         # dans range 1, size + 1 pour que position soit pas de (0 to 9) mais de (1 to 10)
         list_of_square: List[Square] = []
         for x in range(1, self._width + 1):

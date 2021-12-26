@@ -7,3 +7,6 @@ class SquareType(Enum):
     EMPTY = 3
     WALL = 4
     OBSTACLE = 5
+
+    def __hash__(self):
+        return hash(self.value)

@@ -9,7 +9,7 @@ class Position:
         self._co_x: int = co_x
         self._co_y: int = co_y
 
-    def apply_movement(self, movement: Movement):
+    def apply_movement(self, movement: Movement) -> 'Position':
         applied: Position = copy(self)
         direction: Direction = movement.direction
         length: int = movement.length
@@ -24,23 +24,23 @@ class Position:
 
         return applied
 
-    def get_surrounding_positions(self):
-        positions: List[Position] = []
+    def get_surrounding_positions(self) -> List['Position']:
+        positions: List[Position] = [self.apply_movement(movement=Movement(direction=Direction.STAY))]
         #             *
         #          *  *  *
         #       *  *  ¤  *  *
         #          *  *  *
         #             *
         for direction in Direction.__members__.values():
-            position_plus_one: Position = self.apply_movement(Movement(direction=direction))
-            positions.append(position_plus_one)
             if direction != direction.STAY:
+                position_plus_one: Position = self.apply_movement(Movement(direction=direction))
                 position_plus_two: Position = position_plus_one.apply_movement(Movement(direction=direction))
-                positions.append(position_plus_two)
-        positions.append(Position(co_x=self._co_x - 1, co_y=self._co_y))
-        positions.append(Position(co_x=self._co_x + 1, co_y=self._co_y))
-        positions.append(Position(co_x=self._co_x, co_y=self._co_y - 1))
-        positions.append(Position(co_x=self._co_x, co_y=self._co_y + 1))
+                positions.append(position_plus_one)
+        #         positions.append(position_plus_two)
+        # positions.append(Position(co_x=self._co_x - 1, co_y=self._co_y))
+        # positions.append(Position(co_x=self._co_x + 1, co_y=self._co_y))
+        # positions.append(Position(co_x=self._co_x, co_y=self._co_y - 1))
+        # positions.append(Position(co_x=self._co_x, co_y=self._co_y + 1))
         return positions
 
     def number_of_square_between_self_and_tested_position(self, tested_position_co_x: int,
@@ -75,6 +75,9 @@ class Position:
         if isinstance(tested, Position):
             return self._co_x == tested.co_x and self._co_y == tested.co_y
         return False
+
+    def __hash__(self):
+        return hash((self._co_x, self._co_y))
 
 
 class OutOfBoundBlockPositionException(Exception):
