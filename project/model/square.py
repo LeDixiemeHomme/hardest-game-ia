@@ -21,7 +21,6 @@ class Square:
         list_of_possible_state: List[{'Square': ['Square']}] = []
         nb_surrounding_position: int = len(self.position.get_surrounding_positions())
         for i in range(nb_surrounding_position):
-            print(i)
             list_of_possible_state.append(
                 self._create_state(dict_index_in_surrounding_with_square_type={}))
             list_of_possible_state.append(
