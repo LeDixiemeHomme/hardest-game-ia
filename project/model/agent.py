@@ -38,32 +38,32 @@ class Agent:
     def _fill_qtable(self) -> {}:
         qtable = {}
         for square in self._board.square_list.list_of_square:
-            tuple_square_position = square.position.to_tuple()
-            qtable[tuple_square_position] = {}
+            # ici il ne faut pas que ça soit la position du square mais pour ce square la liste de toutes les possibilités de square
+            qtable[square.position] = {}
             for surrounding_position in square.position.get_surrounding_positions():
-                tuple_surrounding_position = surrounding_position.to_tuple()
-                qtable[tuple_square_position][tuple_surrounding_position] = {}
+                qtable[square.position][surrounding_position] = {}
                 for direction in Direction.__members__.values():
-                    qtable[tuple_square_position][tuple_surrounding_position][direction] = 0.0
+                    qtable[square.position][surrounding_position][direction] = 0.0
         return qtable
 
     def _update_qtable(self, square: Square, action: Direction, reward: int):
-        tuple_position = square.position.to_tuple()
         # Q(s, a) <- Q(s, a) + learning_rate * [reward + discount_factor * max(Q(state)) - Q(s, a)]
-        max_q: int = max(self._qtable[tuple_position].values())
-        self._qtable[tuple_position][action] += self._learning_rate * (
-                reward + self._discount_factor * max_q - self._qtable[tuple_position][action])
+        max_q: int = max(self._qtable[square.position][square.position].values())
+        self._qtable[square.position][square.position][action] += self._learning_rate * (
+                reward + self._discount_factor * max_q - self._qtable[square.position][square.position][action])
 
     def best_action(self) -> Direction:
         best_direction: Direction = Direction.STAY
-        tuple_current_position = self._square.position.to_tuple()
         for surrounding_position in self._square.position.get_surrounding_positions():
-            tuple_surrounding_position = surrounding_position.to_tuple()
-            for direction in self._qtable[tuple_current_position][tuple_surrounding_position]:
-                if self._qtable[tuple_current_position][tuple_surrounding_position][direction] > \
-                        self._qtable[tuple_current_position][tuple_surrounding_position][best_direction]:
+            for direction in self._qtable[self._square.position][surrounding_position]:
+                if self._qtable[self._square.position][surrounding_position][direction] > \
+                        self._qtable[self._square.position][surrounding_position][best_direction]:
                     best_direction = direction
         return best_direction
+
+    # def best_action_with_knowing_where_the_goal_is(self) -> Direction:
+    #     best_direction: Direction = Direction.STAY
+    #     tuple_current_position = self._square.position.to_tuple()
 
     def is_next_position_closer_from_goal_than_self_position(self, next_position: Position) -> bool:
         return self._board.distance_from_position_goal(position_to_test=self._square.position) \
