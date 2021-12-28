@@ -38,7 +38,12 @@ class Agent:
     def _fill_qtable(self) -> {}:
         qtable = {}
         for square in self._board.square_list.list_of_square:
-            # ici il ne faut pas que ça soit la position du square mais pour ce square la liste de toutes les possibilités de square
+        #     for state in square.all_possible_state():
+        #         qtable[state] = {}
+        #         for direction in Direction.__members__.values():
+        #             qtable[state][direction] = 0.0
+
+        # ici il ne faut pas que ça soit la position du square mais pour ce square la liste de toutes les possibilités de square
             qtable[square.position] = {}
             for surrounding_position in square.position.get_surrounding_positions():
                 qtable[square.position][surrounding_position] = {}
