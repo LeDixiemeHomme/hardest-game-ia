@@ -54,6 +54,8 @@ COLOR_WITH_TYPE: {SquareType: COLOR} = {
     SquareType.WALL: COLOR.get("BLACK")
 }
 
+REWARD_APPROACHING: float = 5
+
 REWARD_WITH_TYPE: {SquareType: int} = {
     SquareType.EMPTY: -10,
     SquareType.START: -20,
