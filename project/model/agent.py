@@ -6,6 +6,7 @@ from project.model.board import Board, Position
 from project.model.direction import Direction
 from project.model.movement import Movement
 from project.model.position import OutOfBoundBlockPositionException
+from project.model.q_table import QTable
 from project.model.square import Square, StateWithSurrounding
 from project.model.square_type import SquareType
 
@@ -18,7 +19,7 @@ class Agent:
     picture_size: int = constants.PICTURE_SIZE
 
     def __init__(self, board: Board,
-                 qtable: {} = None,
+                 qtable: QTable = None,
                  picture_path: str = picture_path,
                  picture_size: int = picture_size,
                  learning_rate: float = 1,
@@ -29,46 +30,18 @@ class Agent:
         self._picture_size: int = picture_size
         self._learning_rate: float = learning_rate
         self._discount_factor: float = discount_factor
+        self._score = 0
         if qtable is None:
-            self._qtable = self._fill_qtable()
+            self._qtable = QTable()
         else:
             self._qtable = qtable
-        self._score = 0
-
-    def _fill_qtable(self) -> {}:
-        qtable = {}
-        for square in self._board.square_list.list_of_square:
-            for state in square.all_possible_state():
-                qtable[state] = {}
-                for direction in Direction.__members__.values():
-                    qtable[state][direction] = 0.0
-        return qtable
-
-    def _update_qtable(self, state_with_surrounding: StateWithSurrounding, action: Direction, reward: float):
-        # Q(s, a) <- Q(s, a) + learning_rate * [reward + discount_factor * max(Q(state)) - Q(s, a)]_square
-
-        if state_with_surrounding not in self._qtable:
-            print(state_with_surrounding)
-        max_q: int = max(self._qtable[state_with_surrounding].values())
-        self._qtable[state_with_surrounding][action] += self._learning_rate * (
-                reward + self._discount_factor * max_q - self._qtable[state_with_surrounding][action])
 
     def best_action(self) -> Direction:
-        best_direction = None
-        self_state: StateWithSurrounding = StateWithSurrounding(center_square=self._square,
-                                                                list_square=self.get_surrounding_squares())
-
-        if self_state not in self._qtable:
-            self._qtable[self_state] = {}
-            for direction in Direction.__members__.values():
-                self._qtable[self_state][direction] = 0.0
-
-        for possible_direction in self._qtable[self_state]:
-            if not best_direction or self._qtable[self_state][possible_direction] > \
-                    self._qtable[self_state][best_direction]:
-                best_direction = possible_direction
-
-        return best_direction
+        self_state: StateWithSurrounding = \
+            StateWithSurrounding(center_square=self._square, list_square=self.get_surrounding_squares())
+        if self_state not in self._qtable.table:
+            self._qtable.add_state_to_table(state_to_add=self_state)
+        return self._qtable.give_best_direction(state=self_state)
 
     def is_next_position_closer_from_goal_than_self_position(self, next_position: Position) -> bool:
         return self._board.distance_from_position_goal(position_to_test=self._square.position) \
@@ -111,14 +84,14 @@ class Agent:
         reward_approaching: float = constants.REWARD_APPROACHING
 
         aware_of_goal_position_reward: float = reward + reward_approaching \
-            if is_approaching else reward - reward_approaching
+            if is_approaching else reward
 
         if should_qtable_be_updated:
-            self._update_qtable(state_with_surrounding=
-                                StateWithSurrounding(center_square=self._square,
-                                                     list_square=self.get_surrounding_squares()),
-                                action=requested_movement.direction,
-                                reward=aware_of_goal_position_reward)
+            self._qtable.add_q_rate_to_table(
+                state_with_surrounding=StateWithSurrounding(center_square=self._square,
+                                                            list_square=self.get_surrounding_squares()),
+                action=requested_movement.direction, earned_reward=aware_of_goal_position_reward,
+                learning_rate=self._learning_rate, discount_factor=self._discount_factor)
 
         self._move(square_to_move_on=Square(position=next_position, square_type=next_square_type))
         self._score += aware_of_goal_position_reward
