@@ -32,11 +32,15 @@ SQUARE_BOARD_HEIGHT = 10
 
 BASE_PATH: str = os.path.abspath("..") + '/'
 
-AGENT_PICTURE_PATH: str = BASE_PATH + "static/agent.png"
+START_PICTURE_PATH: str = BASE_PATH + "static/start.png"
 
-OBSTACLE_PICTURE_PATH: str = BASE_PATH + "static/obstacle.png"
+GOAL_PICTURE_PATH: str = BASE_PATH + "static/goal.png"
 
-ICON_PICTURE_PATH: str = BASE_PATH + "static/artificial-intelligence.png"
+AGENT_PICTURE_PATH: str = BASE_PATH + "static/knight.png"
+
+OBSTACLE_PICTURE_PATH: str = BASE_PATH + "static/spike.png"
+
+ICON_PICTURE_PATH: str = BASE_PATH + "static/artificial_intelligence.png"
 
 PICTURE_SIZE: int = SQUARE_SIZE * DRAW_SCALE
 
