@@ -56,13 +56,13 @@ class TestSquareList:
 
     def test_should_get_index_of_list_of_square_by_position_with_position_start_return_0(self):
         expected_index: int = 0
-        assert expected_index == self.board.square_list._get_index_of_list_of_square_by_position(
+        assert expected_index == self.board.square_list.get_index_of_list_of_square_by_position(
             position=self.position_start)
 
     @pytest.mark.parametrize("tested_position", positions_out)
     def test_should_get_index_of_list_of_square_by_position_with_position_start_raise_exception(self, tested_position):
         with pytest.raises(OutOfBoundBlockPositionException):
-            self.board.square_list._get_index_of_list_of_square_by_position(position=tested_position)
+            self.board.square_list.get_index_of_list_of_square_by_position(position=tested_position)
 
     def test_should_move_obstacles_not_erase_start_position(self):
         expected_log: List[SquareType] = [SquareType.START, SquareType.OBSTACLE, SquareType.START]

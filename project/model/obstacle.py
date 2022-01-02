@@ -53,12 +53,12 @@ class Obstacle:
         copy_square_list.put_square_in_list_of_square(Square(position=position_after_movement,
                                                              square_type=SquareType.OBSTACLE))
 
-        self.move(square_to_move_on=Square(
+        self._move(square_to_move_on=Square(
             position=position_after_movement, square_type=next_square_type), viewer=viewer)
 
         return copy_square_list
 
-    def move(self, square_to_move_on: Square, viewer: Viewer):
+    def _move(self, square_to_move_on: Square, viewer: Viewer):
         self.draw_square_type_on_position(position_to_draw=self._position, viewer=viewer)
         self._position = square_to_move_on.position
         self.draw_image_on_current_position(viewer=viewer)

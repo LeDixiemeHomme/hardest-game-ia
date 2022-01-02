@@ -1,6 +1,7 @@
 from typing import List
 
 from project.model.obstacle import Square, SquareType, Position
+from project.model.position import OutOfBoundBlockPositionException
 
 
 class SquareList:
@@ -12,7 +13,7 @@ class SquareList:
         self._fill_list_of_square_with_init_square(position_start=position_start,
                                                    position_goal=position_goal)
 
-    def _generate_list_of_square(self):
+    def _generate_list_of_square(self) -> List[Square]:
         # dans range 1, size + 1 pour que position soit pas de (0 to 9) mais de (1 to 10)
         list_of_square: List[Square] = []
         for x in range(1, self._width + 1):
@@ -26,18 +27,29 @@ class SquareList:
         self.put_square_in_list_of_square(square_to_put=Square(
             position=position_goal, square_type=SquareType.GOAL))
 
-    def _get_index_of_list_of_square_by_position(self, position: Position) -> int:
+    def get_index_of_list_of_square_by_position(self, position: Position) -> int:
         position.check_boundaries(width=self._width, height=self._height)
         return self._height * position.co_x - (self._height - position.co_y) - 1
 
     def get_square_type_from_board_by_position(self, position: Position) -> SquareType:
         return self._list_of_square[
-            self._get_index_of_list_of_square_by_position(position)].square_type
+            self.get_index_of_list_of_square_by_position(position)].square_type
 
     def put_square_in_list_of_square(self, square_to_put: Square):
         self.list_of_square[
-            self._get_index_of_list_of_square_by_position(
+            self.get_index_of_list_of_square_by_position(
                 position=square_to_put.position)] = square_to_put
+
+    def get_surrounding_squares(self, position: Position) -> List[Square]:
+        positions: List[Position] = position.get_surrounding_positions()
+        squares: List[Square] = []
+        for position in positions:
+            try:
+                square_type: SquareType = self.get_square_type_from_board_by_position(position=position)
+            except OutOfBoundBlockPositionException:
+                square_type: SquareType = SquareType.WALL
+            squares.append(Square(position=position, square_type=square_type))
+        return squares
 
     @property
     def list_of_square(self):

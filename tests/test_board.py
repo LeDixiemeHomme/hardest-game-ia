@@ -38,6 +38,8 @@ class TestBoard:
                          position_start=position_start, position_goal=position_goal,
                          list_of_obstacle=[obstacle_next_to_start, obstacle_next_to_wall])
 
+    position_with_distance_from_goal: [Position, int] = [[position_start, 8], [position_empty, 6]]
+
     board.instantiate_singleton_viewer()
 
     def test_should_move_obstacles_not_move_inside_wall(self):
@@ -58,3 +60,7 @@ class TestBoard:
         with pytest.raises(WrongDisplaySizeException):
             Board(width=10, height=21, position_start=Position(1, 1), position_goal=Position(2, 2),
                   list_of_obstacle=[])
+
+    @pytest.mark.parametrize("position, distance", position_with_distance_from_goal)
+    def test_distance_from_position_goal(self, position, distance):
+        assert self.board.distance_from_position_goal(position_to_test=position) == distance
