@@ -384,3 +384,4 @@ cython_debug/
 .idea/
 project/perso_main.py
 logs/*
+generated_q_tables/*
