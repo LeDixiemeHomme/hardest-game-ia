@@ -4,7 +4,6 @@ from project.logger.logger import Logger
 from project.constants.game_constants import Movement, Board, MAIN_BOARD, SQUARE_BOARD, TEST_BOARD
 
 from project.model.agent import Agent
-from project.model.direction import Direction
 
 logger: Logger = Logger(name=__name__, log_file_name="main_log")
 stdout_logger = logger.stdout_log
@@ -12,42 +11,42 @@ stdout_logger = logger.stdout_log
 
 if __name__ == '__main__':
     qtable = None
-    for iteration in range(200):
+    # for iteration in range(1):
+    for iteration in range(2000):
         running = True
         lose = win = False
-        board: Board = MAIN_BOARD
-        # board: Board = SQUARE_BOARD
+
+        # board: Board = MAIN_BOARD
+        board: Board = SQUARE_BOARD
         # board: Board = TEST_BOARD
 
         board.instantiate_singleton_viewer()
-        agent: Agent = Agent(board=board, qtable=qtable, learning_rate=2, discount_factor=1)
+        agent: Agent = Agent(board=board, qtable=qtable, learning_rate=1, discount_factor=0.5)
         stdout_logger.debug("Start drawing board ...")
         agent.board.draw_board()
 
         while running and not win and not lose:
             agent.board.viewer.screen.update()
+            agent.board.move_obstacles()
+            agent.draw_image_on_current_position()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                # elif event.type == pygame.KEYDOWN:
-                #     movement_next: Movement = Movement(
-                #         direction=board.viewer.direction_from_key_down_value(key_down=event.key))
-                #     agent.move_agent_if_possible(requested_movement=movement_next)
+                elif event.type == pygame.KEYDOWN:
+                    movement_next: Movement = Movement(
+                        direction=board.viewer.direction_from_key_down_value(key_down=event.key))
+                    agent.move_agent_if_possible(requested_movement=movement_next, should_qtable_be_updated=False)
 
-            agent.board.move_obstacles()
-            agent.draw_image_on_current_position()
-            best_direction: Direction = agent.best_action()
-            reward: int = agent.move_agent_with_qtable_update(requested_movement=Movement(direction=best_direction))
+            movement_next: Movement = Movement(direction=agent.best_action())
+            agent.move_agent_if_possible(requested_movement=movement_next, should_qtable_be_updated=True)
 
             if agent.is_position_on_goal_square():
                 win = True
+                stdout_logger.debug("You win")
             if agent.is_position_on_obstacle_square():
                 lose = True
-
-        # if win:
-        #     stdout_logger.debug("You win")
-        # if lose:
-        #     stdout_logger.debug("You lose")
+                stdout_logger.debug("You lose")
 
         score = agent.score
         stdout_logger.info(str(iteration) + " - Your score : " + str(score))
