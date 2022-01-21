@@ -67,7 +67,7 @@ class Board:
         return square_list
 
     def move_obstacles(self):
-        self.viewer.set_tick(time_to_stop=6)
+        self.viewer.set_tick(time_to_stop=constants.TICK)
         for obstacle in self._list_of_obstacle:
             new_square_list: SquareList = obstacle.move_obstacle_if_possible(square_list=self._square_list,
                                                                              viewer=self.viewer)

@@ -68,3 +68,5 @@ REWARD_WITH_TYPE: {SquareType: int} = {
     SquareType.GOAL: 1000
 }
 
+TICK: int = 30
+# TICK: int = 6
