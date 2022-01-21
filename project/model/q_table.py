@@ -7,19 +7,12 @@ class QTable:
     def __init__(self, square_list: SquareList = None):
         if square_list is None:
             self._table: {StateWithSurrounding: {Direction: float}} = {}
-        else:
-            self._fill_table(square_list=square_list)
 
     def add_state_to_table(self, state_to_add: StateWithSurrounding) -> {StateWithSurrounding: {Direction: float}}:
         self._table[state_to_add]: {Direction: float} = {}
         for direction in Direction.__members__.values():
             self._table[state_to_add][direction] = 0.0
         self._table = self._table
-
-    def _fill_table(self, square_list: SquareList) -> {StateWithSurrounding: {Direction: float}}:
-        for square in square_list.list_of_square:
-            for state in square.all_possible_state():
-                self.add_state_to_table(state_to_add=state)
 
     def give_best_direction(self, state: StateWithSurrounding) -> Direction:
         best_direction: Direction = Direction.STAY
