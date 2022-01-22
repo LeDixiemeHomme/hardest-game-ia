@@ -39,30 +39,6 @@ class Square:
         self._position: Position = position
         self._square_type: SquareType = square_type
 
-    def _create_state(self, index_in_surrounding_with_square_type: {int: SquareType}) -> StateWithSurrounding:
-        copy_self: Square = copy(self)
-        if len(index_in_surrounding_with_square_type) > len(copy_self.position.get_surrounding_positions()):
-            raise Exception
-        for index_square_type in index_in_surrounding_with_square_type:
-            if index_square_type > len(copy_self.position.get_surrounding_positions()):
-                raise Exception
-
-        state: StateWithSurrounding = StateWithSurrounding(center_square=copy_self, list_square=[])
-        for i in range(len(copy_self.position.get_surrounding_positions())):
-            contains: bool = False
-            position: Position = copy_self.position.get_surrounding_positions()[i]
-            square_type: SquareType = SquareType.EMPTY
-            for index_square_type in index_in_surrounding_with_square_type:
-                if i == index_square_type:
-                    contains = True
-            if contains:
-                square_type = index_in_surrounding_with_square_type.get(i)
-            square_to_add: Square = Square(position=position, square_type=square_type)
-            state.list_square.append(square_to_add)
-        if copy_self.square_type == SquareType.START:
-            state.list_square[0] = copy_self
-        return state
-
     @property
     def position(self):
         return self._position
