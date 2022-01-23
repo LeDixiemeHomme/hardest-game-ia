@@ -1,8 +1,25 @@
 from project.constants import constants
 
 from project.model.board import Board, Position, Obstacle
-from project.model.position import Pattern, Movement
-from project.model.direction import Direction
+from project.model.position import Pattern, Movement, Direction
+from project.model.square_type import SquareType
+
+LEARNING_RATE: float = 0.2
+
+DISCOUNT_FACTOR: float = 0.5
+
+EXPLORATION_RATE: float = 1.0
+
+DIMINUTION_RATE: float = 0.99
+
+DEFAULT_REWARD_VALUE: float = 10.0
+
+REWARD_WITH_TYPE: {SquareType: int} = {
+    SquareType.EMPTY: -5,
+    SquareType.WALL: -50,
+    SquareType.OBSTACLE: -1000,
+    SquareType.GOAL: 5000
+}
 
 CROSS_PATTERN: Pattern = Pattern(list_of_movements=
                                  [Movement(direction=Direction.RIGHT),
@@ -34,17 +51,11 @@ SQUARE_PATTERN: Pattern = Pattern(list_of_movements=[Movement(direction=Directio
                                                      Movement(direction=Direction.UP)
                                                      ])
 
-OBSTACLE_CROSS_PATTERN_MAIN_1: Obstacle = Obstacle(position=Position(co_x=5, co_y=1), pattern=CROSS_PATTERN)
+OBSTACLE_UP_DOWN_PATTERN_1_BOARD_LEVEL_2 = Obstacle(position=Position(co_x=4, co_y=2), pattern=UP_DOWN_PATTERN)
 
-OBSTACLE_CROSS_PATTERN_MAIN_2: Obstacle = Obstacle(position=Position(co_x=7, co_y=3), pattern=CROSS_PATTERN)
+OBSTACLE_CROSS_PATTERN_1_BOARD_LEVEL_3: Obstacle = Obstacle(position=Position(co_x=4, co_y=1), pattern=CROSS_PATTERN)
 
-OBSTACLE_CROSS_PATTERN_MAIN_3: Obstacle = Obstacle(position=Position(co_x=9, co_y=1), pattern=CROSS_PATTERN)
-
-OBSTACLE_CROSS_PATTERN_MAIN_4: Obstacle = Obstacle(position=Position(co_x=11, co_y=3), pattern=CROSS_PATTERN)
-
-OBSTACLE_CROSS_PATTERN_MAIN_5: Obstacle = Obstacle(position=Position(co_x=13, co_y=1), pattern=CROSS_PATTERN)
-
-OBSTACLE_CROSS_PATTERN_MAIN_6: Obstacle = Obstacle(position=Position(co_x=15, co_y=3), pattern=CROSS_PATTERN)
+OBSTACLE_CROSS_PATTERN_2_BOARD_LEVEL_3: Obstacle = Obstacle(position=Position(co_x=6, co_y=1), pattern=CROSS_PATTERN)
 
 OBSTACLE_SQUARE_CROSS_PATTERN_1: Obstacle = Obstacle(position=Position(co_x=4, co_y=4), pattern=CROSS_PATTERN)
 
@@ -74,34 +85,44 @@ OBSTACLE_SQUARE_CROSS_PATTERN_12: Obstacle = Obstacle(position=Position(co_x=2, 
 
 OBSTACLE_SQUARE_CROSS_PATTERN_13: Obstacle = Obstacle(position=Position(co_x=9, co_y=9), pattern=CROSS_PATTERN)
 
-MAIN_START_POSITION: Position = Position(2, 2)
+BOARD_LEVEL_1_START_POSITION: Position = Position(2, 2)
 
-MAIN_GOAL_POSITION: Position = Position(16, 2)
+BOARD_LEVEL_1_GOAL_POSITION: Position = Position(6, 2)
 
-TEST_START_POSITION: Position = Position(1, 2)
+BOARD_LEVEL_2_START_POSITION: Position = Position(2, 2)
 
-TEST_GOAL_POSITION: Position = Position(3, 2)
+BOARD_LEVEL_2_GOAL_POSITION: Position = Position(6, 2)
 
-SQUARE_START_POSITION: Position = Position(5, 1)
+BOARD_LEVEL_3_START_POSITION: Position = Position(2, 2)
 
-SQUARE_GOAL_POSITION: Position = Position(6, 10)
+BOARD_LEVEL_3_GOAL_POSITION: Position = Position(8, 2)
 
-MAIN_BOARD: Board = Board(width=constants.MAIN_BOARD_WIDTH, height=constants.MAIN_BOARD_HEIGHT,
-                          position_start=MAIN_START_POSITION, position_goal=MAIN_GOAL_POSITION,
-                          list_of_obstacle=[
-                              OBSTACLE_CROSS_PATTERN_MAIN_1,
-                              OBSTACLE_CROSS_PATTERN_MAIN_2,
-                              OBSTACLE_CROSS_PATTERN_MAIN_3,
-                              OBSTACLE_CROSS_PATTERN_MAIN_4,
-                              OBSTACLE_CROSS_PATTERN_MAIN_5,
-                              OBSTACLE_CROSS_PATTERN_MAIN_6
-                          ])
+SQUARE_START_POSITION: Position = Position(1, 5)
 
-TEST_BOARD: Board = Board(width=constants.TEST_BOARD_WIDTH, height=constants.TEST_BOARD_HEIGHT,
-                          position_start=TEST_START_POSITION, position_goal=TEST_GOAL_POSITION,
-                          list_of_obstacle=[])
+SQUARE_GOAL_POSITION: Position = Position(10, 6)
 
-SQUARE_BOARD: Board = Board(width=constants.SQUARE_BOARD_WIDTH, height=constants.SQUARE_BOARD_HEIGHT,
+BOARD_LEVEL_1: Board = Board(name="BOARD_LEVEL_1",
+                             width=constants.BOARD_LEVEL_1_WIDTH, height=constants.BOARD_LEVEL_1_HEIGHT,
+                             position_start=BOARD_LEVEL_1_START_POSITION, position_goal=BOARD_LEVEL_1_GOAL_POSITION,
+                             list_of_obstacle=[])
+
+BOARD_LEVEL_2: Board = Board(name="BOARD_LEVEL_2",
+                             width=constants.BOARD_LEVEL_2_WIDTH, height=constants.BOARD_LEVEL_2_HEIGHT,
+                             position_start=BOARD_LEVEL_2_START_POSITION, position_goal=BOARD_LEVEL_2_GOAL_POSITION,
+                             list_of_obstacle=[
+                                 OBSTACLE_UP_DOWN_PATTERN_1_BOARD_LEVEL_2
+                             ])
+
+BOARD_LEVEL_3: Board = Board(name="BOARD_LEVEL_3",
+                             width=constants.BOARD_LEVEL_3_WIDTH, height=constants.BOARD_LEVEL_3_HEIGHT,
+                             position_start=BOARD_LEVEL_3_START_POSITION, position_goal=BOARD_LEVEL_3_GOAL_POSITION,
+                             list_of_obstacle=[
+                                 OBSTACLE_CROSS_PATTERN_1_BOARD_LEVEL_3,
+                                 OBSTACLE_CROSS_PATTERN_2_BOARD_LEVEL_3
+                             ])
+
+SQUARE_BOARD: Board = Board(name="SQUARE_BOARD", width=constants.SQUARE_BOARD_WIDTH,
+                            height=constants.SQUARE_BOARD_HEIGHT,
                             position_start=SQUARE_START_POSITION, position_goal=SQUARE_GOAL_POSITION,
                             list_of_obstacle=[
                                 OBSTACLE_SQUARE_CROSS_PATTERN_1,

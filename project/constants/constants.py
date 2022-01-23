@@ -2,9 +2,7 @@ import os
 
 from project.model.square_type import SquareType
 
-# width == x and height == y
-#
-#  + -- -- -- -- -- -- > x
+#  + -- -- -- -- -- -- > width
 #  |
 #  |
 #  |
@@ -12,23 +10,29 @@ from project.model.square_type import SquareType
 #  |
 #  |
 #  \/
-#  y
+#  height
 
 SQUARE_SIZE: int = 1
 
 DRAW_SCALE: int = 40
 
-MAIN_BOARD_WIDTH = 17
+BOARD_LEVEL_1_WIDTH = 7
 
-MAIN_BOARD_HEIGHT = 3
+BOARD_LEVEL_1_HEIGHT = 3
 
-TEST_BOARD_WIDTH = 3
+BOARD_LEVEL_2_WIDTH = 7
 
-TEST_BOARD_HEIGHT = 3
+BOARD_LEVEL_2_HEIGHT = 3
+
+BOARD_LEVEL_3_WIDTH = 9
+
+BOARD_LEVEL_3_HEIGHT = 3
 
 SQUARE_BOARD_WIDTH = 10
 
 SQUARE_BOARD_HEIGHT = 10
+
+NUMBER_ON_INFO_TO_DISPLAY: int = 12
 
 BASE_PATH: str = os.path.abspath("..") + '/'
 
@@ -38,9 +42,11 @@ GOAL_PICTURE_PATH: str = BASE_PATH + "static/goal.png"
 
 AGENT_PICTURE_PATH: str = BASE_PATH + "static/knight.png"
 
-OBSTACLE_PICTURE_PATH: str = BASE_PATH + "static/spike.png"
+OBSTACLE_PICTURE_PATH: str = BASE_PATH + "static/python.xcf"
 
 ICON_PICTURE_PATH: str = BASE_PATH + "static/artificial_intelligence.png"
+
+STORAGE_DIR_NAME: str = "generated_q_tables"
 
 PICTURE_SIZE: int = SQUARE_SIZE * DRAW_SCALE
 
@@ -58,15 +64,9 @@ COLOR_WITH_TYPE: {SquareType: COLOR} = {
     SquareType.WALL: COLOR.get("BLACK")
 }
 
-REWARD_APPROACHING: float = 5
-
-REWARD_WITH_TYPE: {SquareType: int} = {
-    SquareType.EMPTY: -10,
-    SquareType.START: -20,
-    SquareType.WALL: -50,
-    SquareType.OBSTACLE: - 100,
-    SquareType.GOAL: 1000
-}
-
-TICK: int = 30
+TICK: int = 60
+# TICK: int = 30
 # TICK: int = 6
+
+# IS_AI_PLAYING: bool = False
+IS_AI_PLAYING: bool = True
