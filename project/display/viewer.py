@@ -1,13 +1,16 @@
+from typing import List
+
 import pygame
 
 from project.metaSingleton.MetaSingleton import MetaSingleton
 from project.constants import constants
-from project.model.direction import Direction
+from project.model.movement import Direction
 
 
 class Viewer(metaclass=MetaSingleton):
     def __init__(self, width: int, height: int):
         pygame.init()
+        pygame.font.init()
         self._init_screen()
         self._init_display(width=width, height=height)
         self._clock = pygame.time.Clock()
@@ -22,8 +25,13 @@ class Viewer(metaclass=MetaSingleton):
     def _init_display(self, width: int, height: int):
         height_border_size = width_border_size = 1
         my_display = self._screen.set_mode(((width_border_size + width + width_border_size) * constants.DRAW_SCALE,
-                                            (height_border_size + height + height_border_size) * constants.DRAW_SCALE))
+                                            (height_border_size + height + height_border_size +
+                                             constants.NUMBER_ON_INFO_TO_DISPLAY) * constants.DRAW_SCALE))
         self._display = my_display
+
+    @staticmethod
+    def create_font(name: str, size: int):
+        return pygame.font.SysFont(name, size)
 
     @staticmethod
     def create_rectangle(left_arg: int, top_arg: int) -> pygame.Rect:
@@ -42,6 +50,17 @@ class Viewer(metaclass=MetaSingleton):
         elif key_down == pygame.K_DOWN:
             direction = Direction.DOWN
         return direction
+
+    def viewer_write_font(self, txt: List[str], rectangle: (float, float), a_font: pygame.font):
+        scale = constants.DRAW_SCALE * constants.SQUARE_SIZE
+        margin: int = 2
+        for i in range(constants.NUMBER_ON_INFO_TO_DISPLAY):
+            for square in range(rectangle[0] + 2):
+                self.viewer_draw(color=constants.COLOR.get("WHITE"),
+                                 rect=self.create_rectangle(left_arg=square, top_arg=rectangle[1] + i + margin))
+        for i in range(1, len(txt) + 1):
+            surface = a_font.render(txt[i - 1], False, (255, 0, 0))
+            self._display.blit(surface, (0, (rectangle[1] + margin + i) * scale))
 
     def viewer_draw_image(self, picture_path: str, picture_size: int, co_x: int, co_y: int) -> pygame.Rect:
         image = pygame.image.load(picture_path)

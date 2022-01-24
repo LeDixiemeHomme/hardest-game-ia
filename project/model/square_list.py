@@ -51,6 +51,12 @@ class SquareList:
             squares.append(Square(position=position, square_type=square_type))
         return squares
 
+    def get_surrounding_square_types(self, position: Position) -> List[SquareType]:
+        square_types: List[SquareType] = []
+        for square in self.get_surrounding_squares(position=position):
+            square_types.append(square.square_type)
+        return square_types
+
     @property
     def list_of_square(self):
         return self._list_of_square

@@ -25,7 +25,7 @@ class Position:
         return applied
 
     def get_surrounding_positions(self) -> List['Position']:
-        positions: List[Position] = [self.apply_movement(movement=Movement(direction=Direction.STAY))]
+        positions: List[Position] = [self]
         #             *
         #          *  *  *
         #       *  *  ¤  *  *
@@ -36,15 +36,15 @@ class Position:
                 position_plus_one: Position = self.apply_movement(Movement(direction=direction))
                 position_plus_two: Position = position_plus_one.apply_movement(Movement(direction=direction))
                 positions.append(position_plus_one)
-        #         positions.append(position_plus_two)
-        # positions.append(Position(co_x=self._co_x - 1, co_y=self._co_y))
-        # positions.append(Position(co_x=self._co_x + 1, co_y=self._co_y))
-        # positions.append(Position(co_x=self._co_x, co_y=self._co_y - 1))
-        # positions.append(Position(co_x=self._co_x, co_y=self._co_y + 1))
+                positions.append(position_plus_two)
+        positions.append(Position(co_x=self._co_x - 1, co_y=self._co_y - 1))
+        positions.append(Position(co_x=self._co_x + 1, co_y=self._co_y + 1))
+        positions.append(Position(co_x=self._co_x + 1, co_y=self._co_y - 1))
+        positions.append(Position(co_x=self._co_x - 1, co_y=self._co_y + 1))
         return positions
 
-    def number_of_square_between_self_and_tested_position(self, tested_position_co_x: int,
-                                                          tested_position_co_y: int) -> int:
+    def number_of_square_between_positions(self, tested_position_co_x: int,
+                                           tested_position_co_y: int) -> int:
         tested_position: Position = Position(co_x=tested_position_co_x, co_y=tested_position_co_y)
         return abs(tested_position.co_x - self._co_x) + abs(tested_position.co_y - self._co_y)
 

@@ -4,8 +4,7 @@ import pytest
 
 from project.custom_exception.wrong_display_size_exception import WrongDisplaySizeException
 from project.model.board import Board, Position, Obstacle
-from project.model.direction import Direction
-from project.model.movement import Movement
+from project.model.movement import Movement, Direction
 from project.model.position import Pattern
 
 
@@ -34,7 +33,7 @@ class TestBoard:
     obstacle_next_to_wall: Obstacle = Obstacle(position=position_next_to_wall, pattern=Pattern(
         list_of_movements=[down_movement, down_movement]))
 
-    board: Board = Board(height=board_height, width=board_width,
+    board: Board = Board(name="test_board", height=board_height, width=board_width,
                          position_start=position_start, position_goal=position_goal,
                          list_of_obstacle=[obstacle_next_to_start, obstacle_next_to_wall])
 
@@ -53,12 +52,14 @@ class TestBoard:
 
     def test_board_with_big_width_raise_wrong_display_size_exception(self):
         with pytest.raises(WrongDisplaySizeException):
-            Board(width=21, height=10, position_start=Position(1, 1), position_goal=Position(2, 2),
+            Board(name="test_board", width=21, height=10,
+                  position_start=Position(1, 1), position_goal=Position(2, 2),
                   list_of_obstacle=[])
 
     def test_board_with_big_height_raise_wrong_display_size_exception(self):
         with pytest.raises(WrongDisplaySizeException):
-            Board(width=10, height=21, position_start=Position(1, 1), position_goal=Position(2, 2),
+            Board(name="test_board", width=10, height=21,
+                  position_start=Position(1, 1), position_goal=Position(2, 2),
                   list_of_obstacle=[])
 
     @pytest.mark.parametrize("position, distance", position_with_distance_from_goal)
