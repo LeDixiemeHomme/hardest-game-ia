@@ -16,9 +16,10 @@ stdout_logger = logger.stdout_log
 
 
 class Board:
-    def __init__(self, width: int, height: int,
+    def __init__(self, name: str, width: int, height: int,
                  position_start: Position, position_goal: Position,
                  list_of_obstacle: List[Obstacle]):
+        self._name = name
         self._viewer = None
         self._square_list: SquareList = self._init_square_list(
             width=width, height=height, list_of_obstacle=list_of_obstacle,
@@ -29,7 +30,7 @@ class Board:
         self._viewer: Viewer = Viewer(width=self._width, height=self._height)
 
     def distance_from_position_goal(self, position_to_test: Position) -> int:
-        return self._position_goal.number_of_square_between_self_and_tested_position(
+        return self._position_goal.number_of_square_between_positions(
             tested_position_co_x=position_to_test.co_x, tested_position_co_y=position_to_test.co_y)
 
     @staticmethod
@@ -79,6 +80,13 @@ class Board:
                 left_arg=square.position.co_x, top_arg=square.position.co_y)
             self.viewer.viewer_draw(color=constants.COLOR_WITH_TYPE.get(square.square_type), rect=rect)
 
+    def surrounding_square_types(self, centered_position: Position):
+        positions: List[Position] = centered_position.get_surrounding_positions()
+        surrounding_square_types: List[SquareType] = []
+        for position in positions:
+            surrounding_square_types.append(self._square_list.get_square_type_from_board_by_position(position=position))
+        return surrounding_square_types
+
     @property
     def square_list(self):
         return self._square_list
@@ -102,6 +110,10 @@ class Board:
     @property
     def position_goal(self):
         return self._position_goal
+
+    @property
+    def name(self):
+        return self._name
 
     @property
     def viewer(self):
