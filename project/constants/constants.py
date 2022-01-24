@@ -67,6 +67,3 @@ COLOR_WITH_TYPE: {SquareType: COLOR} = {
 TICK: int = 60
 # TICK: int = 30
 # TICK: int = 6
-
-# IS_AI_PLAYING: bool = False
-IS_AI_PLAYING: bool = True

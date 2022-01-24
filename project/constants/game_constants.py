@@ -4,15 +4,18 @@ from project.model.board import Board, Position, Obstacle
 from project.model.position import Pattern, Movement, Direction
 from project.model.square_type import SquareType
 
-LEARNING_RATE: float = 0.2
+LEARNING_RATE: float = 0.6
 
 DISCOUNT_FACTOR: float = 0.5
+# DISCOUNT_FACTOR: float = 1
 
-EXPLORATION_RATE: float = 1.0
+# EXPLORATION_RATE: float = 1.0
+EXPLORATION_RATE: float = 0.0
 
 DIMINUTION_RATE: float = 0.99
 
-DEFAULT_REWARD_VALUE: float = 10.0
+# DEFAULT_REWARD_VALUE: float = 10.0
+DEFAULT_REWARD_VALUE: float = 0.0
 
 REWARD_WITH_TYPE: {SquareType: int} = {
     SquareType.EMPTY: -5,
@@ -20,6 +23,16 @@ REWARD_WITH_TYPE: {SquareType: int} = {
     SquareType.OBSTACLE: -1000,
     SquareType.GOAL: 5000
 }
+
+NUMBER_ROUND: int = 101
+
+CHOSEN_BOARD: str = "BOARD_LEVEL_1"
+# CHOSEN_BOARD: str = "BOARD_LEVEL_2"
+# CHOSEN_BOARD: str = "BOARD_LEVEL_3"
+# CHOSEN_BOARD: str = "SQUARE_BOARD"
+
+# IS_AI_PLAYING: bool = False
+IS_AI_PLAYING: bool = True
 
 CROSS_PATTERN: Pattern = Pattern(list_of_movements=
                                  [Movement(direction=Direction.RIGHT),
@@ -139,3 +152,10 @@ SQUARE_BOARD: Board = Board(name="SQUARE_BOARD", width=constants.SQUARE_BOARD_WI
                                 OBSTACLE_SQUARE_CROSS_PATTERN_12,
                                 OBSTACLE_SQUARE_CROSS_PATTERN_13
                             ])
+
+BOARD_WITH_NAME: {str: Board} = {
+    BOARD_LEVEL_1.name: BOARD_LEVEL_1,
+    BOARD_LEVEL_2.name: BOARD_LEVEL_2,
+    BOARD_LEVEL_3.name: BOARD_LEVEL_3,
+    SQUARE_BOARD.name: SQUARE_BOARD,
+}

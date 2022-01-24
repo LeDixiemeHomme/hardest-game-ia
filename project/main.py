@@ -24,26 +24,15 @@ if __name__ == '__main__':
                      ', df = ' + str(game_constants.DISCOUNT_FACTOR) + \
                      ', reward_goal = ' + str(game_constants.REWARD_WITH_TYPE.get(SquareType.GOAL))
 
-    is_ai_playing = constants.IS_AI_PLAYING
-
     file_name: str = '../' + constants.STORAGE_DIR_NAME + '/' + data_name + '.dat'
-    # file_name: str = '../generated_q_tables/common_qtable_file, lr = 0.2, df = 0.5, reward_goal = 2000.dat'
-    # file_name: str = '../generated_q_tables/common_qtable_file, lr = 0.2, df = 0.5, reward_goal = 5000.dat'
-    # file_name: str = '../generated_q_tables/common_qtable_file, lr = 0.4, df = 0.5, reward_goal = 2000.dat'
-    # file_name: str = '../generated_q_tables/common_qtable_file, lr = 0.4, df = 0.5, reward_goal = 5000.dat'
 
-    # choose the level you want to play
-    board: Board = BOARD_LEVEL_1
-    # board: Board = BOARD_LEVEL_2
-    # board: Board = BOARD_LEVEL_3
-    # board: Board = SQUARE_BOARD
-
+    is_ai_playing = game_constants.IS_AI_PLAYING
+    board: Board = game_constants.BOARD_WITH_NAME.get(game_constants.CHOSEN_BOARD)
     qtable: QTable = pickle_singleton.load(filename=file_name)
-
     history: List[int] = []
     number_of_win: int = 0
 
-    for iteration in range(101):
+    for iteration in range(game_constants.NUMBER_ROUND):
         time_start_ite = datetime.datetime.now()
         running = True
         lose = win = over = False
@@ -120,7 +109,7 @@ if __name__ == '__main__':
     plt.plot(history)
     plt.title("level name : " + board.name +
               ", qtable size : " + str(len(qtable.table)))
-    # plt.show()
+    plt.show()
 
     txt = ""
     while txt != "y" and txt != "n":
@@ -128,7 +117,4 @@ if __name__ == '__main__':
         print(txt)
 
     if txt == "y":
-        # time = datetime.datetime.now()
-        # data_name = board.name + "/" + time.strftime("max_score=" + str(max(history)) + " time=%Y-%m-%d_%H:%M:%S")
-        # file_name: str = '../' + constants.STORAGE_DIR_NAME + '/' + data_name + '.dat'
         pickle_singleton.save(filename=file_name, qtable=qtable)
