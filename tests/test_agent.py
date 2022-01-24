@@ -4,8 +4,7 @@ import pytest
 
 from project.model.agent import Agent
 from project.model.board import Board, Position
-from project.model.direction import Direction
-from project.model.movement import Movement
+from project.model.movement import Movement, Direction
 from project.model.obstacle import Obstacle
 from project.model.square import Square
 from project.model.square_type import SquareType
@@ -41,7 +40,7 @@ class TestAgent:
 
     obstacle: Obstacle = Obstacle(position=position_obstacle)
 
-    board: Board = Board(height=board_height, width=board_width,
+    board: Board = Board(name="test_board", height=board_height, width=board_width,
                          position_start=position_start, position_goal=position_goal,
                          list_of_obstacle=[obstacle])
 

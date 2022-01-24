@@ -3,8 +3,7 @@ from typing import List
 import pytest
 
 from project.model.board import Board, Position, Obstacle
-from project.model.direction import Direction
-from project.model.movement import Movement
+from project.model.movement import Movement, Direction
 from project.model.position import Pattern, OutOfBoundBlockPositionException
 from project.model.square_type import SquareType
 
@@ -34,7 +33,7 @@ class TestSquareList:
     obstacle_next_to_wall: Obstacle = Obstacle(position=position_next_to_wall, pattern=Pattern(
         list_of_movements=[down_movement, down_movement]))
 
-    board: Board = Board(height=board_height, width=board_width,
+    board: Board = Board(name="test_board", height=board_height, width=board_width,
                          position_start=position_start, position_goal=position_goal,
                          list_of_obstacle=[obstacle_next_to_start, obstacle_next_to_wall])
 
